@@ -63,6 +63,11 @@ contract Voting is Ownable{
         _;
     }
 
+    modifier senderRegistred(){
+        require(comptesWL[msg.sender].isRegistered, "You're not registred.");
+        _;
+    }
+
     function nextStage() internal {
         //If we already are in Stage of VotesTallied, then it's a start over
         WorkflowStatus newStatus = (wfStatus != WorkflowStatus.VotesTallied) ? WorkflowStatus(uint(wfStatus) + 1) : WorkflowStatus.RegisteringVoters;
@@ -116,7 +121,7 @@ contract Voting is Ownable{
     *   3) Les électeurs inscrits sont autorisés à enregistrer leurs propositions pendant que la session d'enregistrement est active.
     *
     */
-    function registeringProposal(string memory _description) public atStage(WorkflowStatus.ProposalsRegistrationStarted){
+    function registeringProposal(string memory _description) public senderRegistred atStage(WorkflowStatus.ProposalsRegistrationStarted){
         listProposal[proposalId] = Proposal(_description,0);
         proposalId++;
         //TODO Que se passe-t-il si plusieurs propositions sont les mêmes ?
@@ -148,10 +153,10 @@ contract Voting is Ownable{
     *   6) Les électeurs inscrits votent pour leurs propositions préférées.
     *
     */
-    function votingFor(uint _proposalId) public atStage(WorkflowStatus.VotingSessionStarted){
-        //Droit de voter de msg.sender
-        require(comptesWL[msg.sender].isRegistered && (comptesWL[msg.sender].hasVoted == false),"You are not allowed to vote or you already voted");        
-        //Tester que le _proposalId existe vraiment
+    function votingFor(uint _proposalId) public senderRegistred atStage(WorkflowStatus.VotingSessionStarted){
+        //N'a pas déjà voté
+        require(!comptesWL[msg.sender].hasVoted,"You already voted");        
+        //Vote pour une propal existante
         require(proposalId >= _proposalId,"Proposal wished doesnt exist");
 
         //Mise à jour du "à voter"
@@ -204,10 +209,11 @@ contract Voting is Ownable{
     }
 
     /*
-    *   Réinitialise l'app de vote
+    *   10) Réinitialise l'app de vote
     */
     function reInitStatus() public onlyOwner atStage(WorkflowStatus.VotesTallied) {
         nextStage();
+        //Re init la liste des proposals, la liste des WL. Penser à changer le mapping(uint => Proposal) en tableau de proposal directement. Pas d'utilité d'un tel mapping)
     }
 
 }
