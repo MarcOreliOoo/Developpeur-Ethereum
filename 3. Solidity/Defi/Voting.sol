@@ -62,14 +62,10 @@ contract Voting is Ownable{
         );
         _;
     }
-    // Go to the next stage after the function is done.
-    /*modifier transitionNext() {
-        _;
-        nextStage();
-    }*/
 
     function nextStage() internal {
-        WorkflowStatus newStatus = WorkflowStatus(uint(wfStatus) + 1);
+        //If we already are in Stage of VotesTallied, then it's a start over
+        WorkflowStatus newStatus = (wfStatus != WorkflowStatus.VotesTallied) ? WorkflowStatus(uint(wfStatus) + 1) : WorkflowStatus.RegisteringVoters;
         emit WorkflowStatusChange(wfStatus,newStatus);
         wfStatus = newStatus;
     }
@@ -121,7 +117,6 @@ contract Voting is Ownable{
     *
     */
     function registeringProposal(string memory _description) public atStage(WorkflowStatus.ProposalsRegistrationStarted){
-        
         listProposal[proposalId] = Proposal(_description,0);
         proposalId++;
         //TODO Que se passe-t-il si plusieurs propositions sont les mêmes ?
@@ -133,12 +128,10 @@ contract Voting is Ownable{
     *   4) L'administrateur de vote met fin à la session d'enregistrement des propositions.
     *
     */
-    function endingProposalSession() public onlyOwner{
-        //On avait bien démarré la session de proposal
-        require(wfStatus == WorkflowStatus.ProposalsRegistrationStarted,"Registering proposal isn't started yet");
-        //Changement de status
-        emit WorkflowStatusChange(wfStatus,WorkflowStatus.ProposalsRegistrationEnded);
-        wfStatus = WorkflowStatus.ProposalsRegistrationEnded;
+    function endingProposalSession() public onlyOwner atStage(WorkflowStatus.ProposalsRegistrationStarted){
+        //Proposal session over but... do we have at least one vote ?
+        require(proposalId >= 1,"Not enough proposition to start a vote");
+        nextStage();
     }
 
     /* 
@@ -146,14 +139,8 @@ contract Voting is Ownable{
     *   5) L'administrateur du vote commence la session de vote.
     *
     */
-    function startVotingSession() public onlyOwner{
-        //On a bien fini la session de registration des proposals
-        require(wfStatus == WorkflowStatus.ProposalsRegistrationEnded,"Registering proposal isn't finished yet");
-        //On a au moins une proposition, sinon on vote pour rien
-        require(proposalId >= 1,"Not enough proposition to start a vote");
-        //Changement de status
-        emit WorkflowStatusChange(wfStatus,WorkflowStatus.VotingSessionStarted);
-        wfStatus = WorkflowStatus.VotingSessionStarted;
+    function startVotingSession() public onlyOwner atStage(WorkflowStatus.ProposalsRegistrationEnded){
+        nextStage();
     }
 
     /* 
@@ -161,9 +148,7 @@ contract Voting is Ownable{
     *   6) Les électeurs inscrits votent pour leurs propositions préférées.
     *
     */
-    function votingFor(uint _proposalId) public{
-        //la session de vote a démarré
-        require(wfStatus == WorkflowStatus.VotingSessionStarted,"Voting session isn't started yet");
+    function votingFor(uint _proposalId) public atStage(WorkflowStatus.VotingSessionStarted){
         //Droit de voter de msg.sender
         require(comptesWL[msg.sender].isRegistered && (comptesWL[msg.sender].hasVoted == false),"You are not allowed to vote or you already voted");        
         //Tester que le _proposalId existe vraiment
@@ -186,14 +171,10 @@ contract Voting is Ownable{
     *   7) L'administrateur du vote met fin à la session de vote.
     *
     */
-    function endVotingSession() public onlyOwner{
-        //On a bien démarré la session de vote
-        require(wfStatus == WorkflowStatus.VotingSessionStarted,"Voting isn't started yet, can't close it");
+    function endVotingSession() public onlyOwner atStage(WorkflowStatus.VotingSessionStarted){
         //On a au moins un vote
         require(proposalId >= 1,"Not enough proposition to close the voting session");
-        //Changement de status
-        emit WorkflowStatusChange(wfStatus,WorkflowStatus.VotingSessionEnded);
-        wfStatus = WorkflowStatus.VotingSessionEnded;
+        nextStage();
     }
 
 
@@ -202,34 +183,31 @@ contract Voting is Ownable{
     *   8) L'administrateur du vote comptabilise les votes.
     *
     */
-    function countVote() public onlyOwner{
-        require(wfStatus == WorkflowStatus.VotingSessionEnded,"Voting isn't finished yet");
-        uint maxCount=listProposal[0].voteCount;
-        for(uint i = 1;i<proposalId;i++){
+    function countVote() public onlyOwner atStage(WorkflowStatus.VotingSessionEnded){
+        uint maxCount=0;
+        for(uint i = 0;i<proposalId;i++){
             if(listProposal[i].voteCount > maxCount){
                 maxCount = listProposal[i].voteCount;
                 _winningProposalId = i;
             }
         }
-        //Changement de status
-        emit WorkflowStatusChange(wfStatus,WorkflowStatus.VotingSessionEnded);
-        wfStatus = WorkflowStatus.VotesTallied;
+        nextStage();
     }
-
-    function winningProposalId() public view returns(uint){
-        require(wfStatus == WorkflowStatus.VotesTallied,"Vote counting isn't finished yet");
-        return _winningProposalId;
-    }
-
 
     /* 
     *
     *   9) Tout le monde peut vérifier les derniers détails de la proposition gagnante.
     *
     */
-    function getWinner() public view returns(string memory){
-        require(wfStatus == WorkflowStatus.VotesTallied,"Vote counting isn't finished yet");
-        return listProposal[winningProposalId()].description;
+    function getWinner() public view atStage(WorkflowStatus.VotesTallied) returns(uint, string memory){
+        return (_winningProposalId,listProposal[_winningProposalId].description);
+    }
+
+    /*
+    *   Réinitialise l'app de vote
+    */
+    function reInitStatus() public onlyOwner atStage(WorkflowStatus.VotesTallied) {
+        nextStage();
     }
 
 }
