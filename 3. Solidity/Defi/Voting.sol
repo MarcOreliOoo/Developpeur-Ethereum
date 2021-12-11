@@ -44,14 +44,15 @@ contract Voting is Ownable{
     }
 
     mapping (address => Voter) private comptesWL;
-    mapping (uint => Proposal) private listProposal;
-    uint public proposalId = 0;
-    uint private _winningProposalId;
+    //mapping (uint => Proposal) private listProposal;
+    Proposal[] public proposals;
+    //uint public proposalId = 0;
+    uint public winningProposalId;
+    uint public nbVote = 0;
     
 
     /**
     * TODO :
-    * RegisteringProposal : vérifier l'address bien présente dans la whitelist
     * Pour voter il faut accéder à la liste des propositions
     */
     
@@ -122,10 +123,12 @@ contract Voting is Ownable{
     *
     */
     function registeringProposal(string memory _description) public senderRegistred atStage(WorkflowStatus.ProposalsRegistrationStarted){
-        listProposal[proposalId] = Proposal(_description,0);
-        proposalId++;
+        proposals.push(Proposal(_description,0));
+        //listProposal[proposalId] = Proposal(_description,0);
+        //proposalId++;
         //TODO Que se passe-t-il si plusieurs propositions sont les mêmes ?
-        emit ProposalRegistered(proposalId);
+        //emit ProposalRegistered(proposalId);
+        emit ProposalRegistered(proposals.length);
     }
 
     /* 
@@ -135,7 +138,8 @@ contract Voting is Ownable{
     */
     function endingProposalSession() public onlyOwner atStage(WorkflowStatus.ProposalsRegistrationStarted){
         //Proposal session over but... do we have at least one vote ?
-        require(proposalId >= 1,"Not enough proposition to start a vote");
+        //require(proposalId >= 1,"Not enough proposition to start a vote");
+        require(proposals.length >= 1,"Not enough proposition to start a vote");
         nextStage();
     }
 
@@ -157,14 +161,18 @@ contract Voting is Ownable{
         //N'a pas déjà voté
         require(!comptesWL[msg.sender].hasVoted,"You already voted");        
         //Vote pour une propal existante
-        require(proposalId >= _proposalId,"Proposal wished doesnt exist");
+        //require(proposalId >= _proposalId,"Proposal wished doesnt exist");
+        require(proposals.length >= _proposalId,"Proposal wished doesnt exist");
 
         //Mise à jour du "à voter"
         comptesWL[msg.sender].hasVoted = true;
         comptesWL[msg.sender].votedProposalId = _proposalId;
 
         //Mise à jour du count de vote pour la proposition votée
-        listProposal[_proposalId].voteCount++;
+        //listProposal[_proposalId].voteCount++;
+        proposals[_proposalId].voteCount++;
+        //Le nb de vote total augmente
+        nbVote++;
 
         //emit
         emit Voted(msg.sender,_proposalId);
@@ -177,8 +185,7 @@ contract Voting is Ownable{
     *
     */
     function endVotingSession() public onlyOwner atStage(WorkflowStatus.VotingSessionStarted){
-        //On a au moins un vote
-        require(proposalId >= 1,"Not enough proposition to close the voting session");
+        require(nbVote > 0,"We need at least one vote");
         nextStage();
     }
 
@@ -190,10 +197,16 @@ contract Voting is Ownable{
     */
     function countVote() public onlyOwner atStage(WorkflowStatus.VotingSessionEnded){
         uint maxCount=0;
-        for(uint i = 0;i<proposalId;i++){
+        /*for(uint i = 0;i<proposalId;i++){
             if(listProposal[i].voteCount > maxCount){
                 maxCount = listProposal[i].voteCount;
-                _winningProposalId = i;
+                winningProposalId = i;
+            }
+        }*/
+        for(uint i = 0;i<proposals.length;i++){
+            if(proposals[i].voteCount > maxCount){
+                maxCount = proposals[i].voteCount;
+                winningProposalId = i;
             }
         }
         nextStage();
@@ -204,15 +217,17 @@ contract Voting is Ownable{
     *   9) Tout le monde peut vérifier les derniers détails de la proposition gagnante.
     *
     */
-    function getWinner() public view atStage(WorkflowStatus.VotesTallied) returns(uint, string memory){
-        return (_winningProposalId,listProposal[_winningProposalId].description);
+    function getWinner() public view atStage(WorkflowStatus.VotesTallied) returns(uint, string memory, uint){
+        return (winningProposalId,proposals[winningProposalId].description,proposals[winningProposalId].voteCount);
     }
+
 
     /*
     *   10) Réinitialise l'app de vote
     */
     function reInitStatus() public onlyOwner atStage(WorkflowStatus.VotesTallied) {
         nextStage();
+        
         //Re init la liste des proposals, la liste des WL. Penser à changer le mapping(uint => Proposal) en tableau de proposal directement. Pas d'utilité d'un tel mapping)
     }
 
