@@ -49,12 +49,8 @@ contract Voting is Ownable{
     //uint public proposalId = 0;
     uint public winningProposalId;
     uint public nbVote = 0;
-    
+    uint public totalVoter = 0;    
 
-    /**
-    * TODO :
-    * Pour voter il faut accéder à la liste des propositions
-    */
     
     modifier atStage(WorkflowStatus _status) {
         require(
@@ -88,6 +84,7 @@ contract Voting is Ownable{
         vote.isRegistered = true;
         vote.hasVoted = false;
         comptesWL[_address] = vote;
+        totalVoter++;
         //Event électeur enregistré
         emit VoterRegistered(_address);
     }
@@ -103,6 +100,7 @@ contract Voting is Ownable{
             vote = Voter(true,false,0);
             //Si l'adresse est déjà existante on écrase
             comptesWL[arrayWL[i]] = vote;
+            totalVoter++;
             emit VoterRegistered(arrayWL[i]);
         }
     }
@@ -113,6 +111,7 @@ contract Voting is Ownable{
     *
     */
     function startingProposalSession() public onlyOwner atStage(WorkflowStatus.RegisteringVoters){
+        require(totalVoter > 0,"There is not enough address in the WL");
         //WL terminée, on passe à l'étape d'apès
         nextStage();
     }
@@ -122,7 +121,7 @@ contract Voting is Ownable{
     *   3) Les électeurs inscrits sont autorisés à enregistrer leurs propositions pendant que la session d'enregistrement est active.
     *
     */
-    function registeringProposal(string memory _description) public senderRegistred atStage(WorkflowStatus.ProposalsRegistrationStarted){
+    function registeringProposal(string memory _description) public atStage(WorkflowStatus.ProposalsRegistrationStarted) senderRegistred{
         proposals.push(Proposal(_description,0));
         //listProposal[proposalId] = Proposal(_description,0);
         //proposalId++;
@@ -157,7 +156,7 @@ contract Voting is Ownable{
     *   6) Les électeurs inscrits votent pour leurs propositions préférées.
     *
     */
-    function votingFor(uint _proposalId) public senderRegistred atStage(WorkflowStatus.VotingSessionStarted){
+    function votingFor(uint _proposalId) public atStage(WorkflowStatus.VotingSessionStarted) senderRegistred{
         //N'a pas déjà voté
         require(!comptesWL[msg.sender].hasVoted,"You already voted");        
         //Vote pour une propal existante
