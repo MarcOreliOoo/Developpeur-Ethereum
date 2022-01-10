@@ -228,4 +228,48 @@ contract('VOTING', function(accounts){
 			expectEvent(receipt, "WorkflowStatusChange", {previousStatus: previousWfStatus, newStatus: currentWfStatus});		
 		});
 	});
+	
+	
+	context("6) Les électeurs inscrits votent pour leurs propositions préférées.", function() {
+		beforeEach(async function(){
+			this.VOTINGInstance = await VOTING.new({form: owner});
+			await this.VOTINGInstance.registeringWL([voter1,voter2], {from:owner});
+			await this.VOTINGInstance.startingProposalSession({from:owner});
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+		});
+		
+		it("It should revert if it is not the good stage", async function (){
+			await expectRevert(this.VOTINGInstance.votingFor({from:voter1}), "Function cannot be called at this time.");
+		});
+		it("It should revert if voter is not registred", async function (){
+			await expectRevert(this.VOTINGInstance.votingFor({from:voter1}), "Function cannot be called at this time.");
+		});
+		describe("", function(){
+			
+		}
+		it("It should revert if already voted", async function (){
+			await expectRevert(this.VOTINGInstance.votingFor({from:voter1}), "Function cannot be called at this time.");
+		});
+		it("It should revert if voting for an inexistant proposal", async function (){
+			await expectRevert(this.VOTINGInstance.votingFor({from:voter1}), "Function cannot be called at this time.");
+		});
+		
+		it("It should vote for a proposal", async function(){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			
+			const previousWfStatus = await this.VOTINGInstance.wfStatus();
+			expect(previousWfStatus).to.be.bignumber.equal(wfProposalsRegistrationEnded);
+	
+			const receipt = await this.VOTINGInstance.startVotingSession({from:owner});
+	
+			const currentWfStatus = await this.VOTINGInstance.wfStatus();
+			expect(currentWfStatus).to.be.bignumber.equal(wfVotingSessionStarted);
+			expectEvent(receipt, "WorkflowStatusChange", {previousStatus: previousWfStatus, newStatus: currentWfStatus});		
+		});
+		
+	});
+	
+	
 });
