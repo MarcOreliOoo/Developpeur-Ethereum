@@ -36,6 +36,8 @@ contract('VOTING', function(accounts){
 	
 	const propositions = ["Propal A","Propal B","Propal C"];
 	
+	const votedForPA = new BN(0);
+	const votedForPB = new BN(1);
 	
 	
 	//Liste de fonctions utiles
@@ -44,7 +46,7 @@ contract('VOTING', function(accounts){
 	* @description : fill the proposals of the voting instance for voter1 -> proposal A,voter2 -> proposal B and proposal C
 	* @Param votingContext : this.VOTINGInstance
 	*/
-	async function setProposals(votingContext){
+ 	async function setProposals(votingContext){
 		let propal = [];
 		let receipt = [];
 		let x;
@@ -59,7 +61,7 @@ contract('VOTING', function(accounts){
 		}
 	}
 	
-	context("1) L\'administrateur du vote enregistre une liste blanche d\'électeurs identifiés par leur adresse Ethereum.", function() {
+ 	/*context("1) L\'administrateur du vote enregistre une liste blanche d\'électeurs identifiés par leur adresse Ethereum.", function() {
 		
 		beforeEach(async function(){
 			this.VOTINGInstance = await VOTING.new({form: owner});
@@ -228,48 +230,164 @@ contract('VOTING', function(accounts){
 			expectEvent(receipt, "WorkflowStatusChange", {previousStatus: previousWfStatus, newStatus: currentWfStatus});		
 		});
 	});
-	
+
 	
 	context("6) Les électeurs inscrits votent pour leurs propositions préférées.", function() {
 		beforeEach(async function(){
 			this.VOTINGInstance = await VOTING.new({form: owner});
 			await this.VOTINGInstance.registeringWL([voter1,voter2], {from:owner});
 			await this.VOTINGInstance.startingProposalSession({from:owner});
-			await setProposals(this.VOTINGInstance);
-			await this.VOTINGInstance.endingProposalSession({from:owner});
+			//await setProposals(this.VOTINGInstance);
+			//await this.VOTINGInstance.endingProposalSession({from:owner});
 		});
 		
 		it("It should revert if it is not the good stage", async function (){
-			await expectRevert(this.VOTINGInstance.votingFor({from:voter1}), "Function cannot be called at this time.");
-		});
-		it("It should revert if voter is not registred", async function (){
-			await expectRevert(this.VOTINGInstance.votingFor({from:voter1}), "Function cannot be called at this time.");
-		});
-		describe("", function(){
-			
-		}
-		it("It should revert if already voted", async function (){
-			await expectRevert(this.VOTINGInstance.votingFor({from:voter1}), "Function cannot be called at this time.");
-		});
-		it("It should revert if voting for an inexistant proposal", async function (){
-			await expectRevert(this.VOTINGInstance.votingFor({from:voter1}), "Function cannot be called at this time.");
-		});
-		
-		it("It should vote for a proposal", async function(){
 			await setProposals(this.VOTINGInstance);
 			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await expectRevert(this.VOTINGInstance.votingFor(votedForPA,{from:voter1}), "Function cannot be called at this time.");
+		});
+		it("It should revert if voter is not registred", async function (){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await this.VOTINGInstance.startVotingSession({from:owner});
+			await expectRevert(this.VOTINGInstance.votingFor(votedForPA,{from:voter3}), "You're not registred.");
+		});
+		it("It increments voteCount for proposal voted", async function(){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await this.VOTINGInstance.startVotingSession({from:owner});
+			
+			let propA0 = await this.VOTINGInstance.proposals(votedForPA);
+			const nbVoteBeforeVoterVotes = new BN(propA0.voteCount);
+			expect(nbVoteBeforeVoterVotes).to.be.bignumber.equal(new BN(0));
+			
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter1});
+			
+			let propA1 = await this.VOTINGInstance.proposals(votedForPA);
+			const nbVoteAfterVoterVotes = new BN(propA1.voteCount);
+			expect(nbVoteAfterVoterVotes).to.be.bignumber.equal(nbVoteBeforeVoterVotes.add(new BN(1)));
+		});
+		it("It should revert if already voted", async function (){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await this.VOTINGInstance.startVotingSession({from:owner});
+			
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter1});
+			
+			await expectRevert(this.VOTINGInstance.votingFor(votedForPB,{from:voter1}), "You already voted");
+		});
+		it("It should revert if voting for an inexistant proposal", async function (){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await this.VOTINGInstance.startVotingSession({from:owner});
+			
+			await expectRevert(this.VOTINGInstance.votingFor(new BN(5),{from:voter1}), "Proposal wished doesnt exist");
+		});
+		it("It should emit an event", async function (){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await this.VOTINGInstance.startVotingSession({from:owner});
+			
+			const receipt = await this.VOTINGInstance.votingFor(votedForPA,{from:voter1});
+			expectEvent(receipt, "Voted", {voter:voter1, proposalId:votedForPA});
+		});
+		
+	});
+	
+	
+	context("7) L'administrateur du vote met fin à la session de vote.", function() {
+		beforeEach(async function(){
+			this.VOTINGInstance = await VOTING.new({form: owner});
+			await this.VOTINGInstance.registeringWL([voter1,voter2], {from:owner});
+			await this.VOTINGInstance.startingProposalSession({from:owner});
+		});
+		
+		it("It should revert if caller is not the admin", async function (){
+			await expectRevert(this.VOTINGInstance.endVotingSession({from:voter1}), "Ownable: caller is not the owner");
+		});
+		it("It should revert if it is not the good stage", async function (){
+			await expectRevert(this.VOTINGInstance.endVotingSession({from:owner}), "Function cannot be called at this time.");
+		});
+ 		it("It should end the voting session and emit an event", async function(){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await this.VOTINGInstance.startVotingSession({from:owner});
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter1});
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter2});
 			
 			const previousWfStatus = await this.VOTINGInstance.wfStatus();
-			expect(previousWfStatus).to.be.bignumber.equal(wfProposalsRegistrationEnded);
+			expect(previousWfStatus).to.be.bignumber.equal(wfVotingSessionStarted);
 	
-			const receipt = await this.VOTINGInstance.startVotingSession({from:owner});
+			const receipt = await this.VOTINGInstance.endVotingSession({from:owner});
 	
 			const currentWfStatus = await this.VOTINGInstance.wfStatus();
-			expect(currentWfStatus).to.be.bignumber.equal(wfVotingSessionStarted);
+			expect(currentWfStatus).to.be.bignumber.equal(wfVotingSessionEnded);
 			expectEvent(receipt, "WorkflowStatusChange", {previousStatus: previousWfStatus, newStatus: currentWfStatus});		
 		});
 		
 	});
 	
 	
+	context("8) L'administrateur du vote comptabilise les votes.", function() {
+		beforeEach(async function(){
+			this.VOTINGInstance = await VOTING.new({form: owner});
+			await this.VOTINGInstance.registeringWL([voter1,voter2], {from:owner});
+			await this.VOTINGInstance.startingProposalSession({from:owner});
+		});
+		
+		it("It should revert if caller is not the admin", async function (){
+			await expectRevert(this.VOTINGInstance.countVote({from:voter1}), "Ownable: caller is not the owner");
+		});
+		it("It should revert if it is not the good stage", async function (){
+			await expectRevert(this.VOTINGInstance.countVote({from:owner}), "Function cannot be called at this time.");
+		});
+ 		it("It counts vote and emit an event", async function(){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await this.VOTINGInstance.startVotingSession({from:owner});
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter1});
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter2});
+			await this.VOTINGInstance.endVotingSession({from:owner});
+			
+			const previousWfStatus = await this.VOTINGInstance.wfStatus();
+			expect(previousWfStatus).to.be.bignumber.equal(wfVotingSessionEnded);
+	
+			const receipt = await this.VOTINGInstance.countVote({from:owner});
+			const winner = await this.VOTINGInstance.winningProposalId();
+			
+			expect(winner).to.be.bignumber.equal(votedForPA);
+	
+			const currentWfStatus = await this.VOTINGInstance.wfStatus();
+			expect(currentWfStatus).to.be.bignumber.equal(wfVotesTallied);
+			expectEvent(receipt, "WorkflowStatusChange", {previousStatus: previousWfStatus, newStatus: currentWfStatus});		
+		});
+		
+	});*/
+	
+	context("9) Tout le monde peut vérifier les derniers détails de la proposition gagnante.", function() {
+		beforeEach(async function(){
+			this.VOTINGInstance = await VOTING.new({form: owner});
+			await this.VOTINGInstance.registeringWL([voter1,voter2], {from:owner});
+			await this.VOTINGInstance.startingProposalSession({from:owner});
+		});
+		
+		it("It should revert if it is not the good stage", async function (){
+			await expectRevert(this.VOTINGInstance.getWinner({from:voter1}), "Function cannot be called at this time.");
+		});
+ 		it("It returns the winner and some details", async function(){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await this.VOTINGInstance.startVotingSession({from:owner});
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter1});
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter2});
+			await this.VOTINGInstance.endVotingSession({from:owner});
+			await this.VOTINGInstance.countVote({from:owner});
+			
+			const {winnerID, winnerDesc,  winnerCount} = await this.VOTINGInstance.getWinner({from:voter1});
+			expect(winnerID).to.be.bignumber.equal(votedForPA);
+			expect(winnerDesc).to.be.equal("Propal A");
+			expect(winnerCount).to.be.bignumber.equal(new BN(2));
+		});
+		
+	});
 });
