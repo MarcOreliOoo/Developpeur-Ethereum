@@ -61,7 +61,7 @@ contract('VOTING', function(accounts){
 		}
 	}
 	
- 	/*context("1) L\'administrateur du vote enregistre une liste blanche d\'électeurs identifiés par leur adresse Ethereum.", function() {
+ 	context("1) L\'administrateur du vote enregistre une liste blanche d\'électeurs identifiés par leur adresse Ethereum.", function() {
 		
 		beforeEach(async function(){
 			this.VOTINGInstance = await VOTING.new({form: owner});
@@ -362,7 +362,7 @@ contract('VOTING', function(accounts){
 			expectEvent(receipt, "WorkflowStatusChange", {previousStatus: previousWfStatus, newStatus: currentWfStatus});		
 		});
 		
-	});*/
+	});
 	
 	context("9) Tout le monde peut vérifier les derniers détails de la proposition gagnante.", function() {
 		beforeEach(async function(){
@@ -383,7 +383,7 @@ contract('VOTING', function(accounts){
 			await this.VOTINGInstance.endVotingSession({from:owner});
 			await this.VOTINGInstance.countVote({from:owner});
 			
-			const {winnerID, winnerDesc,  winnerCount} = await this.VOTINGInstance.getWinner({from:voter1});
+			const {0:winnerID, 1:winnerDesc,  2:winnerCount} = await this.VOTINGInstance.getWinner({from:voter1});
 			expect(winnerID).to.be.bignumber.equal(votedForPA);
 			expect(winnerDesc).to.be.equal("Propal A");
 			expect(winnerCount).to.be.bignumber.equal(new BN(2));
