@@ -1,6 +1,5 @@
 
 # voting.test.js
-@MarcOreliOoo/Developpeur-Ethereum-Template/4.%20Truffle%20&%20CI-CD/votingSystem/test/voting.test.js
 
 ### Objectifs
 * Réalisation de tests unitaires du smart contract voting.sol
