@@ -1,8 +1,6 @@
 // voting.test.js 
 const { BN, constants, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
-//const assertArrays = require('chai-arrays');
-//expect.use(assertArrays);
 
 const VOTING = artifacts.require('Voting');
 
@@ -40,8 +38,6 @@ contract('VOTING', function(accounts){
 	const votedForPB = new BN(1);
 	
 	
-	//Liste de fonctions utiles
-	
 	/**
 	* @description : fill the proposals of the voting instance for voter1 -> proposal A,voter2 -> proposal B and proposal C
 	* @Param votingContext : this.VOTINGInstance
@@ -61,7 +57,7 @@ contract('VOTING', function(accounts){
 		}
 	}
 	
- 	/*context("1) L\'administrateur du vote enregistre une liste blanche d\'électeurs identifiés par leur adresse Ethereum.", function() {
+ 	context("1) L\'administrateur du vote enregistre une liste blanche d\'électeurs identifiés par leur adresse Ethereum.", function() {
 		
 		beforeEach(async function(){
 			this.VOTINGInstance = await VOTING.new({form: owner});
@@ -391,17 +387,14 @@ contract('VOTING', function(accounts){
 		});
 		
 	});
-	*/
 	
-	context ("10) Réinitialise l'app de vote", function(){
+	
+	/*context ("10) Réinitialise l'app de vote", function(){
 		beforeEach(async function(){
 			this.VOTINGInstance = await VOTING.new({form: owner});
 			await this.VOTINGInstance.registeringWL([voter1,voter2], {from:owner});
 			await this.VOTINGInstance.startingProposalSession({from:owner});
 		});
-		/*it("It should revert if caller is not the admin", async function (){
-			await expectRevert(this.VOTINGInstance.reInitStatus({from:voter1}), "Ownable: caller is not the owner");
-		});*/
 		it("It should revert if it is not the good stage", async function (){
 			await expectRevert(this.VOTINGInstance.reInitStatus({from:owner}), "Function cannot be called at this time.");
 		});
@@ -434,12 +427,12 @@ contract('VOTING', function(accounts){
 			await this.VOTINGInstance.reInitStatus({from:owner});
 			
 			//1 tout seul ok, plusieurs : erreur multiple done() call
-			/*Error: done() called multiple times in test <Contract: VOTING 10) 
-			Réinitialise l'app de vote It delete all proposals, erase the whitelist, reinit winningProposal, et totalVoter> 
-			of file D:\Data\Documents\TruffleProjects\Developpeur-Ethereum-Template\4. Truffle & CI-CD\votingSystem\test\voting.test.js*/
+			//Error: done() called multiple times in test <Contract: VOTING 10) 
+			//Réinitialise l'app de vote It delete all proposals, erase the whitelist, reinit winningProposal, et totalVoter> 
+			//of file D:\Data\Documents\TruffleProjects\Developpeur-Ethereum-Template\4. Truffle & CI-CD\votingSystem\test\voting.test.js
 			expect(await this.VOTINGInstance.proposals(0).description).to.be.undefined;
 			expect(await this.VOTINGInstance.winningProposalId()).to.be.bignumber.equal(new BN(0));
 			expect(await this.VOTINGInstance.totalVoter()).to.be.bignumber.equal(new BN(0));
 		});
-	});	
+	});*/
 });
