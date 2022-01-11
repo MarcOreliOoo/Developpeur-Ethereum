@@ -61,7 +61,7 @@ contract('VOTING', function(accounts){
 		}
 	}
 	
- 	context("1) L\'administrateur du vote enregistre une liste blanche d\'électeurs identifiés par leur adresse Ethereum.", function() {
+ 	/*context("1) L\'administrateur du vote enregistre une liste blanche d\'électeurs identifiés par leur adresse Ethereum.", function() {
 		
 		beforeEach(async function(){
 			this.VOTINGInstance = await VOTING.new({form: owner});
@@ -364,6 +364,7 @@ contract('VOTING', function(accounts){
 		
 	});
 	
+	
 	context("9) Tout le monde peut vérifier les derniers détails de la proposition gagnante.", function() {
 		beforeEach(async function(){
 			this.VOTINGInstance = await VOTING.new({form: owner});
@@ -390,4 +391,45 @@ contract('VOTING', function(accounts){
 		});
 		
 	});
+	*/
+	
+	context ("10) Réinitialise l'app de vote", function(){
+		beforeEach(async function(){
+			this.VOTINGInstance = await VOTING.new({form: owner});
+			await this.VOTINGInstance.registeringWL([voter1,voter2], {from:owner});
+			await this.VOTINGInstance.startingProposalSession({from:owner});
+		});
+		/*it("It should revert if caller is not the admin", async function (){
+			await expectRevert(this.VOTINGInstance.reInitStatus({from:voter1}), "Ownable: caller is not the owner");
+		});
+		it("It should revert if it is not the good stage", async function (){
+			await expectRevert(this.VOTINGInstance.reInitStatus({from:owner}), "Function cannot be called at this time.");
+		});*/
+		it("It changes the status of workflow", async function (){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await this.VOTINGInstance.startVotingSession({from:owner});
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter1});
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter2});
+			await this.VOTINGInstance.endVotingSession({from:owner});
+			await this.VOTINGInstance.countVote({from:owner});
+			
+			const previousWfStatus = await this.VOTINGInstance.wfStatus();
+			expect(previousWfStatus).to.be.bignumber.equal(wfVotesTallied);
+			
+			await this.VOTINGInstance.reInitStatus({from:owner});
+			const receipt = await this.VOTINGInstance.wfStatus({from:owner});
+			
+			const currentWfStatus = await this.VOTINGInstance.wfStatus();
+			expect(currentWfStatus).to.be.bignumber.equal(wfRegisteringVoters);
+			expectEvent(receipt, "WorkflowStatusChange", {previousStatus: previousWfStatus, newStatus: currentWfStatus} );
+		});
+		/*
+		it("It delete all proposals, erase the whitelist, reinit winningProposal, et totalVoter", async function (){
+			await this.VOTINGInstance.countVote({from:owner});
+			await this.VOTINGInstance.reInitStatus({from:owner});
+			
+			expect(await this.VOTINGInstance.proposals(0)).to.be.undefined;
+		});*/
+	});	
 });
