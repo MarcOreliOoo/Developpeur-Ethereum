@@ -401,10 +401,10 @@ contract('VOTING', function(accounts){
 		});
 		/*it("It should revert if caller is not the admin", async function (){
 			await expectRevert(this.VOTINGInstance.reInitStatus({from:voter1}), "Ownable: caller is not the owner");
-		});
+		});*/
 		it("It should revert if it is not the good stage", async function (){
 			await expectRevert(this.VOTINGInstance.reInitStatus({from:owner}), "Function cannot be called at this time.");
-		});*/
+		});
 		it("It changes the status of workflow", async function (){
 			await setProposals(this.VOTINGInstance);
 			await this.VOTINGInstance.endingProposalSession({from:owner});
@@ -417,19 +417,29 @@ contract('VOTING', function(accounts){
 			const previousWfStatus = await this.VOTINGInstance.wfStatus();
 			expect(previousWfStatus).to.be.bignumber.equal(wfVotesTallied);
 			
-			await this.VOTINGInstance.reInitStatus({from:owner});
-			const receipt = await this.VOTINGInstance.wfStatus({from:owner});
-			
+			const receipt = await this.VOTINGInstance.reInitStatus({from:owner});
+		
 			const currentWfStatus = await this.VOTINGInstance.wfStatus();
 			expect(currentWfStatus).to.be.bignumber.equal(wfRegisteringVoters);
-			expectEvent(receipt, "WorkflowStatusChange", {previousStatus: previousWfStatus, newStatus: currentWfStatus} );
+			expectEvent(receipt, "WorkflowStatusChange", {previousStatus: previousWfStatus, newStatus: currentWfStatus} ); 
 		});
-		/*
 		it("It delete all proposals, erase the whitelist, reinit winningProposal, et totalVoter", async function (){
+			await setProposals(this.VOTINGInstance);
+			await this.VOTINGInstance.endingProposalSession({from:owner});
+			await this.VOTINGInstance.startVotingSession({from:owner});
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter1});
+			await this.VOTINGInstance.votingFor(votedForPA,{from:voter2});
+			await this.VOTINGInstance.endVotingSession({from:owner});
 			await this.VOTINGInstance.countVote({from:owner});
 			await this.VOTINGInstance.reInitStatus({from:owner});
 			
-			expect(await this.VOTINGInstance.proposals(0)).to.be.undefined;
-		});*/
+			//1 tout seul ok, plusieurs : erreur multiple done() call
+			/*Error: done() called multiple times in test <Contract: VOTING 10) 
+			Réinitialise l'app de vote It delete all proposals, erase the whitelist, reinit winningProposal, et totalVoter> 
+			of file D:\Data\Documents\TruffleProjects\Developpeur-Ethereum-Template\4. Truffle & CI-CD\votingSystem\test\voting.test.js*/
+			expect(await this.VOTINGInstance.proposals(0).description).to.be.undefined;
+			expect(await this.VOTINGInstance.winningProposalId()).to.be.bignumber.equal(new BN(0));
+			expect(await this.VOTINGInstance.totalVoter()).to.be.bignumber.equal(new BN(0));
+		});
 	});	
 });
