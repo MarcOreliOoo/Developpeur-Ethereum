@@ -1,5 +1,6 @@
 
 # voting.test.js
+@MarcOreliOoo/Developpeur-Ethereum-Template/4.%20Truffle%20&%20CI-CD/votingSystem/test/voting.test.js
 
 ### Objectifs
 * Réalisation de tests unitaires du smart contract voting.sol
@@ -10,13 +11,13 @@
 On parcourt l'ensemble des fonctions du contrat, et pour chaque fonction :
 * Un bloc `context` permet de définir le contenu de la liste de test unitaire associée à cette fonction. Certains contextes peuvent avoir des blocs describe pour étoffer la sortie de test.
 
-```
+```js
 context("1) L\'administrateur du vote enregistre une liste blanche d\'électeurs identifiés par leur adresse Ethereum.", function() {
   ...
 });
 ```
 * Chacun des `context` est suivi par un `beforeEach` avec les instructions de bases lancées avant chaque test unitaire `it`
-```
+```js
 beforeEach(async function(){
   this.VOTINGInstance = await VOTING.new({form: owner});
   await this.VOTINGInstance.registeringWL([voter1,voter2], {from:owner});
@@ -24,9 +25,10 @@ beforeEach(async function(){
 });
 ```
 * Pour chaque fonction sont testées en début les `modifier`
-** Est-ce bien l'admin qui appelle telle fonction ?
-** Suis-je au bon stage pour lancer telle fonction ?
-```it("It should revert if caller is not the admin", async function (){
+  * Est-ce bien l'admin qui appelle telle fonction ?
+  * Suis-je au bon stage pour lancer telle fonction ?
+```js
+it("It should revert if caller is not the admin", async function (){
   await expectRevert(this.VOTINGInstance.countVote({from:voter1}), "Ownable: caller is not the owner");
 });
 ```
