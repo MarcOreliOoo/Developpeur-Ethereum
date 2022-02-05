@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+pragma solidity 0.8.11;
 
 //import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -18,7 +18,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 */
 
 /*
-	@TODO : 
+	TODO : 
 	- Ajouter SafeMath
 	- Adress zero
 */
