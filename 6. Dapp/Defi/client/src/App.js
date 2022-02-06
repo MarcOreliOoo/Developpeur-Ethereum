@@ -5,8 +5,9 @@ import Card from "react-bootstrap/Card";
 import ListGroup from 'react-bootstrap/ListGroup';
 import Table from 'react-bootstrap/Table';
 
-import "./App.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import "./App.css";
+
 
 import AdminBox from "./AdminBox";
 import EventBox from "./EventBox";

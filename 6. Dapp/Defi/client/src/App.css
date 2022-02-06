@@ -31,3 +31,7 @@
 	font-size: calc(10px + 1vmin);
 	font-style: italic;
 }
+
+.navLink{
+	color: #09d3ac;
+}
