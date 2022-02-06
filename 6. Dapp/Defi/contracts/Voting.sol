@@ -90,6 +90,7 @@ contract Voting is Ownable{
        
         comptesWL[_address].isRegistered = true;
         addressUsed.push(_address);
+		
        
         totalVoter++;
         //Event électeur enregistré
