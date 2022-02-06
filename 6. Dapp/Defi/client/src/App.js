@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import VotingContract from "./contracts/Voting.json";
 import getWeb3 from "./getWeb3";
-import Card from "react-bootstrap/Card";
-import ListGroup from 'react-bootstrap/ListGroup';
-import Table from 'react-bootstrap/Table';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
@@ -72,67 +72,34 @@ class App extends Component {
 	
 	defineInit = async () => {
 		const { contract } = this.state;
-
-		const _totalVoter = await contract.methods.totalVoter().call();
-		//const _proposals = await contract.methods.getProposals().call();
-
-		//Màj state de l'App
-		this.setState({totalVoter:_totalVoter});
+		let nbOfVoter = await contract.methods.totalVoter().call();
+		this.setState({totalVoter:nbOfVoter});
 	};
 
-
-	
-
 	render() {
-	if (!this.state.web3) {
-		return <div>Loading Web3, accounts, and contract...</div>;
-	}
-	return (
-		<div className="App">
-			<NavBox state={this.state} />
-			<div className="App-body">
-				<div>
-					EventBox sur la gauche tout le long rétractable ?
-					<EventBox state={this.state} />
-				</div>
-				<div>AdminBox ici
-					{(this.state.isOwner) &&
-						<AdminBox state={this.state} />	
-					}
-				</div>
-				<div>VoterBox ici
-						<VoterBox state={this.state} />	
-				</div>
+		if (!this.state.web3) {
+			return <div>Loading Web3, accounts, and contract...</div>;
+		}
+		return (
+			<div className="App">
+				<NavBox state={this.state} />
+				<Container fluid>
+				<Row>
+					<Col md="auto">
+						<EventBox state={this.state} />
+					</Col>
+					<Col>
+						<div className="App-body-body">
+							{(this.state.isOwner) &&
+								<AdminBox state={this.state} />	
+							}
+							<VoterBox state={this.state} />	
+						</div>
+					</Col>
+				</Row>
+				</Container>
 			</div>
-			
-			<div>The nb of voter is: {this.state.totalVoter}</div>
-			
-			{/* <div>The proposals are: {this.state.proposals}</div> */}
-			
-			<div style={{display: 'flex', justifyContent: 'center'}}>
-				<Card style={{ width: '20rem' }}>
-				<Card.Header><strong>Liste des comptes autorisés</strong></Card.Header>
-				<Card.Body>
-					<ListGroup variant="flush">
-					<ListGroup.Item>
-						<Table striped bordered hover>
-						<thead>
-							<tr>
-							<th>@</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr><td>{this.state.totalVoter}</td></tr>
-							<tr><td>{this.state.totalVoter}</td></tr>
-						</tbody>
-						</Table>
-					</ListGroup.Item>
-					</ListGroup>
-				</Card.Body>
-				</Card>
-			</div>
-		</div>
-	);
+		);
 	}
 }
 
