@@ -100,7 +100,7 @@ class AdminBox extends Component {
 						<Card style={{ width: '20rem' }}>
 							<Card.Header><strong>Autoriser un nouveau compte</strong></Card.Header>
 							<Card.Body>
-								<Form.Group controlId="formAddress">
+								<Form.Group>
 									<Form.Control type="text" id="address" ref={(input) => { this.address = input }}/>
 								</Form.Group>{' '}
 								<Button onClick={ this.registeringUniqueAd } variant="dark" > Go </Button>

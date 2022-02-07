@@ -15,7 +15,7 @@ import VoterBox from "./VoterBox";
 import NavBox from "./NavBox";
 
 class App extends Component {
-  state = { proposals: [], whiteList: [], totalVoter:0, wfStatus:0, isOwner:false, web3: null, accounts: null, contract: null, eventList : []};
+  state = { proposals:[], whiteList: [], totalVoter:0, wfStatus:0, isOwner:false, web3: null, accounts: null, contract: null, eventList : []};
 
 
 
@@ -30,11 +30,15 @@ class App extends Component {
 		// Get the contract instance.
 		const networkId = await web3.eth.net.getId();
 		const deployedNetwork = VotingContract.networks[networkId];
-		const instance = new web3.eth.Contract(VotingContract.abi, deployedNetwork && deployedNetwork.address,);
+		//const revertB = web3.eth.Contract.handleRevert.true;
+		const instance = new web3.eth.Contract(VotingContract.abi, deployedNetwork && deployedNetwork.address,{handleRevert:true});
 
 		// Set web3, accounts, and contract to the state, and then proceed with an
 		// example of interacting with the contract's methods.
-		this.setState({ web3, accounts, contract: instance }, this.defineIfOwner);
+		this.setState({ web3, accounts, contract: instance});
+		this.defineIfOwner();
+		this.defineStage();
+		this.defineInit();
 
 	} catch (error) {
 		// Catch any errors for any of the above operations.
@@ -52,11 +56,8 @@ class App extends Component {
 		const { accounts, contract } = this.state;
 		let actualOwner = await contract.methods.owner().call();
 		if(actualOwner === accounts[0]){
-			console.log("YOU ARE THE OWNNNNNNNNNNNNNNNNNNNNNER");
-			this.setState({isOwner:true}, this.defineStage);
-		} else {
-			this.defineStage();
-		}	
+			this.setState({isOwner:true});
+		}
 	};
 
 	/**
@@ -66,7 +67,7 @@ class App extends Component {
 		const { contract } = this.state;
 		let actualStatus = await contract.methods.wfStatus().call();
 		console.log("wf : ",actualStatus);
-		this.setState({wfStatus:actualStatus}, this.defineInit);
+		this.setState({wfStatus:actualStatus});
 	};
 	
 	

@@ -20,6 +20,7 @@ class NavBox extends Component {
 	}
 
     render() {
+		let enumMap = this.enumContent.map((a,index) => <Nav.Link key={index}>{a}</Nav.Link>);
         return ( 
 			<Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
 				<Container>
@@ -27,7 +28,7 @@ class NavBox extends Component {
 					<Navbar.Toggle aria-controls="responsive-navbar-nav" />
 					<Navbar.Collapse id="responsive-navbar-nav">
 						<Nav className="me-auto">
-							{this.enumContent.map((a) => <Nav.Link>{a}</Nav.Link>)}
+							{enumMap}
 							<Navbar.Text>
 								<span className="navConnected">Connected with : {this.state.accounts[0]}</span>
 							</Navbar.Text>

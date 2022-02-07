@@ -17,12 +17,13 @@ class EventBox extends Component {
 	componentDidMount = async () => {
 		//setInterval(this.getAllEvents(), 1000);
 		console.log(this.state.totalVoter);
-		this.getAllEvents();
+		//this.getAllEvents();
+		this.getOneEvent();
 	};
 
-	componentWillUnmount = async () => {
+	/* componentWillUnmount = async () => {
 		//clearInterval();
-	};
+	}; */
 
     getAllEvents = async () => {
 		const { contract, eventList } = this.state;
@@ -41,9 +42,21 @@ class EventBox extends Component {
 		this.setState({eventList:eventList});
 	}
 
+	getOneEvent = async () => {
+		const { contract, eventList } = this.state;
+		contract.events.VoterRegistered(
+			{fromBlock: 0, toBlock: 'latest'},
+			function(error, event){ }
+		).then((event) => eventList.push(event.returnValues.voterAddress));
+		this.setState({eventList:eventList});
+	}
+
     render() {
         return ( 
             <div className="EventBox">
+				<h3 className="text-center">Event Box {this.state.wfStatus}</h3>
+				<hr></hr>
+				<br></br>
 				<Container fluid="sm">
 				<Row>
 					<Card bg="secondary" text="light" style={{ width: '20rem' }}>
