@@ -11,7 +11,7 @@ class AdminBox extends Component {
 	}
 
 	componentDidMount = async () => {
-		this.setState({wfStatus:1});
+		//this.setState({wfStatus:1});
 	}
 
     registeringUniqueAd = async () => {

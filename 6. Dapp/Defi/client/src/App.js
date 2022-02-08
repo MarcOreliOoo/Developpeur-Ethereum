@@ -15,7 +15,7 @@ import VoterBox from "./VoterBox";
 import NavBox from "./NavBox";
 
 class App extends Component {
-  state = { proposals:[], whiteList: [], totalVoter:0, wfStatus:0, isOwner:false, web3: null, accounts: null, contract: null, eventList : []};
+  state = { whiteList:null, proposalsId:[], proposalsVotedBy:[], totalVoter:0, wfStatus:0, isOwner:false, web3: null, accounts: null, contract: null, eventList : []};
 
 
 
@@ -35,7 +35,10 @@ class App extends Component {
 
 		// Set web3, accounts, and contract to the state, and then proceed with an
 		// example of interacting with the contract's methods.
-		this.setState({ web3, accounts, contract: instance});
+		
+		const whiteList = new Set();
+		
+		this.setState({ web3, accounts, contract: instance, whiteList});
 		this.defineIfOwner();
 		this.defineStage();
 		this.defineInit();
