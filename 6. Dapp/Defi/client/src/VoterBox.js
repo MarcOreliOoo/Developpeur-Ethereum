@@ -19,7 +19,7 @@ class VoterBox extends Component {
 
 
 	registeringProposal = async () => {
-		const { accounts, contract, proposals } = this.state;
+		const { accounts, contract } = this.state;
 		
 		let proposalToRegister = this.proposal.value;
 		await contract.methods.registeringProposal(proposalToRegister).send({from: accounts[0]})
@@ -30,21 +30,26 @@ class VoterBox extends Component {
 			console.log(error);
 			console.log(receipt);
 		});
-		proposals.push({proposalToRegister});
-		this.setState({proposals});
+		//proposals.push({proposalToRegister});
+		//this.setState({proposals});
 		this.proposal.value = "";
     };
 
 	displayProposals = async () => {
-		//const { proposals } = this.state;
-		let proposals=["propal 1","propal 2","propal 3"];
-		this.setState({proposals:proposals});
-		
+		const { contract, proposalsId } = this.state;
+		let proposalsToDisplay = []; //["propal 1","propal 2","propal 3"];
+		for(let p in proposalsId){
+			let proposal = await contract.methods.proposals(p).call();
+			proposalsToDisplay.push(proposal);
+			console.log(proposal.description+' - '+proposal.voteCount);
+		}
+		//this.setState({proposals:proposals});
 	};
 
 
     render() {
-		let proposalDisplay = this.state.proposals.map((a,index) => <ListGroup.Item key={index}>{a}</ListGroup.Item>);
+		let proposalDisplay = 0;
+		// = this.state.proposalsId.map((a,index) => <ListGroup.Item key={index}>{a}</ListGroup.Item>);
         return ( 
             <div className="VoterBox">
 				<h3 className="text-center">Voter Box {this.state.wfStatus}</h3>
