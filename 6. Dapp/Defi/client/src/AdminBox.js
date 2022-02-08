@@ -11,21 +11,23 @@ class AdminBox extends Component {
 	}
 
 	componentDidMount = async () => {
-		//this.setState({wfStatus:1});
+		console.log("WF Status in AdminBox is : "+this.wfStatus);
 	}
 
     registeringUniqueAd = async () => {
-		const { accounts, contract } = this.state;
-		let voterToregistred = this.address.value;
-		await contract.methods.registeringUniqueAd(voterToregistred).send({from: accounts[0]})
-		.on("receipt",function(receipt){
-			console.log(receipt);
-		})
-		.on("error",function(error, receipt){
-			console.log(error);
-			console.log(receipt);
-		});
-		this.address.value = "";
+		const { accounts, contract, web3 } = this.state;
+		if(this.address.value.trim() !== '' && web3.utils.isAddress(this.address.value)){
+			let voterToregistred = this.address.value;
+			await contract.methods.registeringUniqueAd(voterToregistred).send({from: accounts[0]})
+			.on("receipt",function(receipt){
+				console.log(receipt);
+			})
+			.on("error",function(error, receipt){
+				console.log(error);
+				console.log(receipt);
+			});
+			this.address.value = "";
+		}
     };
 
 	startingProposalSession = async () => {

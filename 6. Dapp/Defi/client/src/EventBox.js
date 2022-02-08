@@ -5,14 +5,13 @@ import Table from 'react-bootstrap/Table';
 import Badge from 'react-bootstrap/Badge';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 
 class EventBox extends Component {
 
 	constructor (props){
 		super(props);
 		this.state = props.state;
-
+		console.log(this.state.wfStatus);
 		this.anInterval = null;
 		
 		this.enumContent = [
@@ -38,34 +37,30 @@ class EventBox extends Component {
 
     getAllEvents = async () => {
 		const { contract, whiteList, proposalsId, proposalsVotedBy } = this.state;
-
+		let x;
 		contract.getPastEvents(
 			'allEvents',
 			{fromBlock: 0, toBlock: 'latest'},
 			function(error, events){ }
 		).then((allEvents) => {
-			var allStatus,lastCoupleOfStatus = [];
+			//var allStatus,lastCoupleOfStatus = [];
 			for(let anEvent of allEvents){
 			  	if (anEvent.event === 'VoterRegistered'){
-					//eventList.push({key:anEvent.returnValues.voterAddress,val:anEvent.returnValues.voterAddress});
 					whiteList.add(anEvent.returnValues.voterAddress);
 				} else if (anEvent.event === 'WorkflowStatusChange'){
-					allStatus.push([anEvent.returnValues.previousStatus,anEvent.returnValues.newStatus]);
-					lastCoupleOfStatus = allStatus[allStatus.length];
-					console.log(lastCoupleOfStatus.map((a) => a+' - '));
+					//@TODO Rework 
+					//allStatus.push([anEvent.returnValues.previousStatus,anEvent.returnValues.newStatus]);
+					//lastCoupleOfStatus = allStatus[allStatus.length];
+					//console.log(lastCoupleOfStatus.map((a) => a+' - '));
+					x = anEvent.returnValues.newStatus;
 				} else if (anEvent.event === 'ProposalRegistered'){
-					proposalsId.push(anEvent.returnValues.proposalId);
-					console.log(proposalsId.map((a) => a+' - '));
+					proposalsId.add(anEvent.returnValues.proposalId);
 				} else if (anEvent.event === 'Voted'){
-					proposalsVotedBy.push({key:anEvent.returnValues.voter,val:anEvent.returnValues.proposalId});
-					console.log(proposalsVotedBy.map((a) => a.key+' - '+a.val));
+					proposalsVotedBy.add({key:anEvent.returnValues.voter,val:anEvent.returnValues.proposalId});
 				}
 			}
 		});
-		//let onlyUnique = [... new Set(whiteList)];
-		//console.log(whiteList);
-		//console.log(onlyUnique);
-		this.setState({whiteList:whiteList});
+		this.setState({whiteList:whiteList, proposalsId:proposalsId, proposalsVotedBy:proposalsVotedBy, wfStatus:x});
 	}
 
 	//Pb websocket idem with contract.events.MyEvent or contract.events.allEvents
@@ -139,7 +134,7 @@ class EventBox extends Component {
 										{
 										this.state.proposalsId !== null
 										&&
-										this.state.proposalsId.map((a) => <tr><td>{"Proposition "+a})</td></tr>)
+										Array.from(this.state.proposalsId).map((a) => <tr><td>{"Proposition "+a}</td></tr>)
 										}
 									</tbody>
 									</Table>
@@ -156,7 +151,7 @@ class EventBox extends Component {
 										{
 										this.state.proposalsVotedBy !== null
 										&&
-										this.state.proposalsVotedBy.map((a) => <tr><td>{a.key+" voted for "+a.val})</td></tr>)
+										Array.from(this.state.proposalsVotedBy).map((a) => <tr><td>{a.key+" voted for "+a.val})</td></tr>)
 										}
 									</tbody>
 									</Table>

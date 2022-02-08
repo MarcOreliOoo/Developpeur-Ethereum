@@ -14,6 +14,7 @@ class VoterBox extends Component {
 	componentDidMount = async () => {
 		//this.setState({wfStatus:1});
 		this.displayProposals();
+		console.log("WF Status in VoterBox is : "+this.wfStatus);
 	}
 	
 

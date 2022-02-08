@@ -8,16 +8,13 @@ import Col from 'react-bootstrap/Col';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 
-
 import AdminBox from "./AdminBox";
 import EventBox from "./EventBox";
 import VoterBox from "./VoterBox";
 import NavBox from "./NavBox";
 
 class App extends Component {
-  state = { whiteList:null, proposalsId:[], proposalsVotedBy:[], totalVoter:0, wfStatus:0, isOwner:false, web3: null, accounts: null, contract: null, eventList : []};
-
-
+  state = { whiteList:null, proposalsId:null, proposalsVotedBy:null, totalVoter:0, wfStatus:0, isOwner:false, web3: null, accounts: null, contract: null, eventList : []};
 
 	componentDidMount = async () => {
 	try {
@@ -31,18 +28,35 @@ class App extends Component {
 		const networkId = await web3.eth.net.getId();
 		const deployedNetwork = VotingContract.networks[networkId];
 		//const revertB = web3.eth.Contract.handleRevert.true;
-		const instance = new web3.eth.Contract(VotingContract.abi, deployedNetwork && deployedNetwork.address,{handleRevert:true});
+		const contract = new web3.eth.Contract(VotingContract.abi, deployedNetwork && deployedNetwork.address,{handleRevert:true});
 
-		// Set web3, accounts, and contract to the state, and then proceed with an
-		// example of interacting with the contract's methods.
-		
+		// Set web3, accounts, and contract to the state, and whiteList, proposalId, proposalsVotedBy
 		const whiteList = new Set();
+		const proposalId = new Set();
+		const proposalsVotedBy = new Set();
 		
-		this.setState({ web3, accounts, contract: instance, whiteList});
-		this.defineIfOwner();
-		this.defineStage();
-		this.defineInit();
+		
+		// Define the stage
+		const actualStatus = parseInt(await contract.methods.wfStatus().call(),10);
+		console.log("Actual Status : "+actualStatus);
+		
+		// Define number of voter
+		const nbOfVoter = await contract.methods.totalVoter().call();
+		console.log("nbOfVoter : "+nbOfVoter);
+		
+		// Define if owner is connected
+		const actualOwner = await contract.methods.owner().call();
+		if(actualOwner === accounts[0]){
+			this.isOwner = true;
+		}
+	
+		console.log(typeof(this.wfStatus));
+		console.log(" =====> this.wfStatus "+this.wfStatus);
+		console.log(" =====> this.totalVoter "+this.totalVoter);	
 
+		this.setState({});
+		this.setState({ web3, accounts, contract, whiteList, proposalId, proposalsVotedBy, wfStatus:actualStatus, totalVoter:nbOfVoter, isOwner:this.isOwner});
+		
 	} catch (error) {
 		// Catch any errors for any of the above operations.
 		alert(
@@ -50,34 +64,6 @@ class App extends Component {
 		);
 		console.error(error);
 	}
-	};
-
-	/**
-	 * Définit si le compte connecté est owner du SC ou non
-	 */
-	defineIfOwner = async () => {
-		const { accounts, contract } = this.state;
-		let actualOwner = await contract.methods.owner().call();
-		if(actualOwner === accounts[0]){
-			this.setState({isOwner:true});
-		}
-	};
-
-	/**
-	 * Définit à quel stage sommes-nous dans le SC
-	 */
-	defineStage = async () => {
-		const { contract } = this.state;
-		let actualStatus = await contract.methods.wfStatus().call();
-		console.log("wf : ",actualStatus);
-		this.setState({wfStatus:actualStatus});
-	};
-	
-	
-	defineInit = async () => {
-		const { contract } = this.state;
-		let nbOfVoter = await contract.methods.totalVoter().call();
-		this.setState({totalVoter:nbOfVoter});
 	};
 
 	render() {
