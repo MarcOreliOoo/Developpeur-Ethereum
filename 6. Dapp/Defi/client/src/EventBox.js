@@ -5,13 +5,16 @@ import Table from 'react-bootstrap/Table';
 import Badge from 'react-bootstrap/Badge';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import AdminBox from "./AdminBox";
+import VoterBox from "./VoterBox";
 
 class EventBox extends Component {
 
 	constructor (props){
 		super(props);
 		this.state = props.state;
-		
+					
 		this.anInterval = null;
 		
 		this.enumContent = [
@@ -41,7 +44,6 @@ class EventBox extends Component {
 			{fromBlock: 0, toBlock: 'latest'},
 			function(error, events){ }
 		).then((allEvents) => {
-			//var allStatus,lastCoupleOfStatus = [];
 			for(let anEvent of allEvents){
 			  	if (anEvent.event === 'VoterRegistered'){
 					whiteList.add(anEvent.returnValues.voterAddress);
@@ -55,9 +57,14 @@ class EventBox extends Component {
 			}
 		});
 		this.setState({whiteList:whiteList, proposalsId:proposalsId, proposalsVotedBy:proposalsVotedBy});
+		//this.props.parentCallBack({whiteList:whiteList, proposalsId:proposalsId, proposalsVotedBy:proposalsVotedBy});
 	}
 
-	//Pb websocket idem with contract.events.MyEvent or contract.events.allEvents
+	
+
+	//Pb websocket with contract.events.MyEvent or contract.events.allEvents. Only getPastEvents work with my version of Ganache.
+	//FIXME : Update Ganache version and try these solutions
+	//Could be worth to add bootstrap toasts with events
 	getOneEvent = async () => {
 		const { contract, eventList } = this.state;
 		contract.events.VoterRegistered(
@@ -68,14 +75,11 @@ class EventBox extends Component {
 	}
 
     render() {
-		console.log("this.enumContent[this.state.wfStatus] : "+this.enumContent[this.state.wfStatus]);
         return ( 
             <div className="EventBox">
-				<h3>Global Information</h3>
-				<hr></hr>
 				<br></br>
 				<Container fluid="sm">
-				<Row>
+				<Row><Col>
 					<Card bg="secondary" text="light" style={{ width: '20rem' }}>
 						<Card.Body>
 							<ListGroup variant="flush">
@@ -120,7 +124,7 @@ class EventBox extends Component {
 									<thead>
 										<tr><th>
 											ProposalRegistered 
-											<Badge bg="dark">{this.state.totalVoter}</Badge>
+											<Badge bg="dark">{Array.from(this.state.proposalsId).length}</Badge>
 											<span className="visually-hidden">unread messages</span>
 										</th></tr>
 									</thead>
@@ -153,7 +157,16 @@ class EventBox extends Component {
 							</ListGroup>
 						</Card.Body>
 					</Card>
-  				</Row>
+				</Col>
+				<Col>
+				<Container fluid>
+					{(this.state.isOwner) &&
+						<AdminBox state={this.state} />	
+					}
+					<VoterBox state={this.state} />	
+				</Container>
+				</Col>
+				</Row>
 				</Container>
 			</div>
 		);

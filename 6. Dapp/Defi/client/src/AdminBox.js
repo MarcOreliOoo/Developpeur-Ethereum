@@ -11,7 +11,7 @@ class AdminBox extends Component {
 	}
 
 	componentDidMount = async () => {
-		console.log("WF Status in AdminBox is : "+this.wfStatus);
+		console.log("WF Status in AdminBox is : "+this.state.wfStatus);
 	}
 
     registeringUniqueAd = async () => {
@@ -93,6 +93,7 @@ class AdminBox extends Component {
     render() {
         return ( 
             <div className="AdminBox">
+				<br></br>
 				<h3 className="text-center">Admin Box {this.state.wfStatus}</h3>
 				<hr></hr>
 				<br></br>
