@@ -49,12 +49,7 @@ class App extends Component {
 		if(actualOwner === accounts[0]){
 			this.isOwner = true;
 		}
-	
-		console.log(typeof(this.wfStatus));
-		console.log(" =====> this.wfStatus "+this.wfStatus);
-		console.log(" =====> this.totalVoter "+this.totalVoter);	
-
-		this.setState({});
+		
 		this.setState({ web3, accounts, contract, whiteList, proposalId, proposalsVotedBy, wfStatus:actualStatus, totalVoter:nbOfVoter, isOwner:this.isOwner});
 		
 	} catch (error) {

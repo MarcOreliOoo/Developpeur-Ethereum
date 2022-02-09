@@ -11,7 +11,7 @@ class EventBox extends Component {
 	constructor (props){
 		super(props);
 		this.state = props.state;
-		console.log(this.state.wfStatus);
+		
 		this.anInterval = null;
 		
 		this.enumContent = [
@@ -27,8 +27,6 @@ class EventBox extends Component {
 
 	componentDidMount = async () => {
 		this.anInterval = setInterval(this.getAllEvents.bind(this), 1000);
-		//this.getAllEvents();
-		//this.getOneEvent();
 	};
 
 	componentWillUnmount = async () => {
@@ -48,10 +46,6 @@ class EventBox extends Component {
 			  	if (anEvent.event === 'VoterRegistered'){
 					whiteList.add(anEvent.returnValues.voterAddress);
 				} else if (anEvent.event === 'WorkflowStatusChange'){
-					//@TODO Rework 
-					//allStatus.push([anEvent.returnValues.previousStatus,anEvent.returnValues.newStatus]);
-					//lastCoupleOfStatus = allStatus[allStatus.length];
-					//console.log(lastCoupleOfStatus.map((a) => a+' - '));
 					x = anEvent.returnValues.newStatus;
 				} else if (anEvent.event === 'ProposalRegistered'){
 					proposalsId.add(anEvent.returnValues.proposalId);
@@ -60,7 +54,7 @@ class EventBox extends Component {
 				}
 			}
 		});
-		this.setState({whiteList:whiteList, proposalsId:proposalsId, proposalsVotedBy:proposalsVotedBy, wfStatus:x});
+		this.setState({whiteList:whiteList, proposalsId:proposalsId, proposalsVotedBy:proposalsVotedBy});
 	}
 
 	//Pb websocket idem with contract.events.MyEvent or contract.events.allEvents
@@ -74,7 +68,7 @@ class EventBox extends Component {
 	}
 
     render() {
-		
+		console.log("this.enumContent[this.state.wfStatus] : "+this.enumContent[this.state.wfStatus]);
         return ( 
             <div className="EventBox">
 				<h3>Global Information</h3>
