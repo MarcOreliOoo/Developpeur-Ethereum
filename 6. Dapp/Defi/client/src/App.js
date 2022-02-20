@@ -6,6 +6,6 @@ export default function App() {
 	const [user, setUser] = useState(null);
 
 	return(
-		user ? <div>Hi tu es connecté !</div>:<LoginForm setUser={setUser}/>
+		user ? <div>Hi tu es connecté NEW FILE !</div>:<LoginForm setUser={setUser}/>
 	);
 }
