@@ -52,7 +52,7 @@ export class Chield1 extends Component{
 export default AppPassageValEntrePereFils;
 
 /**
- * 
+ * From Parent to a chield
  * @returns 
  */
 
@@ -71,5 +71,36 @@ function Child ({dataParentToChild}){
         </div>
     )
 }
+/**
+ * From Chield to a Parent
+ * @returns 
+ */
+
+export default function Parent() {
+  const [data, setData] = useState("");
+
+  const childToParent = (childdata) => {
+    setData(childdata);
+  };
+
+  return (
+    <div className="App">
+      {data}
+      <div>
+        <Child childToParent={childToParent} />
+      </div>
+    </div>
+  );
+}
+
+export function Child({ childToParent }) {
+  const data = "This is data from Child Component to the Parent Component. OK";
+  return (
+    <div>
+      <button onClick={() => childToParent(data)}>Click Child</button>
+    </div>
+  );
+}
+
 
 export default Parent;
