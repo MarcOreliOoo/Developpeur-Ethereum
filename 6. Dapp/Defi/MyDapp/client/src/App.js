@@ -4,11 +4,11 @@ import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
 import VotingContract from "./contracts/Voting.json";
 import getWeb3 from "./getWeb3";
-
+import { AdminPage } from "./App/AdminPage";
 
 
 export default function App() {
-	//const [storageValue, setStorageValue] = useState(undefined);
+	//const [status, setStatus] = useState(1);
     const [web3, setWeb3] = useState(null);
     const [accounts, setAccounts] = useState([]);
     const [contract, setContract] = useState(null);
@@ -42,27 +42,63 @@ export default function App() {
         console.log(accounts[0]);
     }, [accounts]);
 
+	function Status({contract}){
+		const [status,setStatus] = useState(1);
+		const ctr = {contract};
+		// Define the stage
+		useEffect(() => {
+			(async function(){
+				const s = parseInt(await ctr.methods.wfStatus().call(),10);
+				setStatus(s);
+			})();
+		},[status])
+		//if(status !== undefined){
+			return (
+				<Navbar.Text>
+					Actual status : {status}
+				</Navbar.Text>
+			);
+		//} else return <></>		
+	}
+
+	
 	function Navigation(){
 		return <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-		<Container>
+			<Container>
 			<Navbar.Brand href="#home">Voting System</Navbar.Brand>
 			<Navbar.Toggle aria-controls="responsive-navbar-nav" />
+			
+			<Nav className="me-auto">
+				<Status contract={contract} />
+			</Nav>
+			
 			<Navbar.Collapse id="responsive-navbar-nav me-auto">
 				<Nav className="ms-auto">
 					{web3===null ? <button className="btn btn-primary" onClick={Connect}>Connect</button> : 
 					<Navbar.Text>
-						<span className="navConnected">Connected with : {accounts[0]}</span>
+						Connected with : {accounts[0]}
 					</Navbar.Text>}
 				</Nav>
 			</Navbar.Collapse>
-		</Container>
-	</Navbar>
+			
+			</Container>
+		</Navbar>
 	}
 
-	return (
-		<div className="Container">
+
+	return (<Container fluid>
 			<Navigation />
-			
-	  	</div>
+			<VotersPage />
+			<AdminPage />
+			<Propositions />
+		</Container>
 	);
+}
+
+function VotersPage(){
+	return <div className="Container"></div>
+}
+
+function Propositions(){
+	return <div className="Container"></div>
 }
