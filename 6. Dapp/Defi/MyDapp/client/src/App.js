@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useCallback } from "react";
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
+import React, { useState, useCallback } from "react";
 import Container from 'react-bootstrap/Container';
 import VotingContract from "./contracts/Voting.json";
 import getWeb3 from "./getWeb3";
-import { AdminPage } from "./App/AdminPage";
+import Navigation from "./components/Navigation";
 
 
 export default function App() {
-	//const [status, setStatus] = useState(1);
+	
     const [web3, setWeb3] = useState(null);
     const [accounts, setAccounts] = useState([]);
     const [contract, setContract] = useState(null);
+	const [wfStatus,setStatus] = useState(9);
 	
-	const Connect = useCallback (async function () {
+	
+	const handleConnect = useCallback (async function () {
 		console.log("useCallb");
 		try {
 			// Get network provider and web3 instance.			
@@ -25,10 +25,16 @@ export default function App() {
 			const deployedNetwork = VotingContract.networks[networkId];
 			//const revertB = web3.eth.Contract.handleRevert.true;
 			const contract = new web3.eth.Contract(VotingContract.abi, deployedNetwork && deployedNetwork.address);
+			
+			//Getting Status of the workflow
+			const actualStatus = await contract.methods.wfStatus().call();
+			
 			// Set web3, accounts, contract to the state
 			setWeb3(web3);
 			setContract(contract);
 			setAccounts(accounts);
+			setStatus(actualStatus);
+			
 		} catch (error) {
 			// Catch any errors for any of the above operations
 			alert(
@@ -38,67 +44,8 @@ export default function App() {
 		}
 	},[]);
 
-	useEffect( () => {
-        console.log(accounts[0]);
-    }, [accounts]);
-
-	function Status({contract}){
-		const [status,setStatus] = useState(1);
-		const ctr = {contract};
-		// Define the stage
-		useEffect(() => {
-			(async function(){
-				const s = parseInt(await ctr.methods.wfStatus().call(),10);
-				setStatus(s);
-			})();
-		},[status])
-		//if(status !== undefined){
-			return (
-				<Navbar.Text>
-					Actual status : {status}
-				</Navbar.Text>
-			);
-		//} else return <></>		
-	}
-
-	
-	function Navigation(){
-		return <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-			<Container>
-			<Navbar.Brand href="#home">Voting System</Navbar.Brand>
-			<Navbar.Toggle aria-controls="responsive-navbar-nav" />
-			
-			<Nav className="me-auto">
-				<Status contract={contract} />
-			</Nav>
-			
-			<Navbar.Collapse id="responsive-navbar-nav me-auto">
-				<Nav className="ms-auto">
-					{web3===null ? <button className="btn btn-primary" onClick={Connect}>Connect</button> : 
-					<Navbar.Text>
-						Connected with : {accounts[0]}
-					</Navbar.Text>}
-				</Nav>
-			</Navbar.Collapse>
-			
-			</Container>
-		</Navbar>
-	}
-
-
 	return (<Container fluid>
-			<Navigation />
-			<VotersPage />
-			<AdminPage />
-			<Propositions />
+			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} wfStatus={wfStatus} setStatus={setStatus}/>
 		</Container>
 	);
-}
-
-function VotersPage(){
-	return <div className="Container"></div>
-}
-
-function Propositions(){
-	return <div className="Container"></div>
 }
