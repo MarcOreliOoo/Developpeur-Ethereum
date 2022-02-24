@@ -1,0 +1,32 @@
+.votersBox {
+  border: 2px solid black;
+  border-radius: 20px;
+  width: 90vw;
+  height: auto;
+  min-height: 300px;
+  background-color: aliceblue;
+  display: flex;
+  justify-content: space-between;
+  margin: 3% auto;
+}
+
+.votersBoxPhase {
+  width: 33%;
+}
+
+.votersBoxPhaseAlt {
+  border-right: 2px solid black;
+}
+
+.titlePhase {
+  text-align: center;
+  font-weight: bold;
+}
+
+.phaseActive::after{
+
+}
+
+.phase::after{
+  
+}
