@@ -10,7 +10,7 @@ export default function App() {
     const [web3, setWeb3] = useState(null);
     const [accounts, setAccounts] = useState([]);
     const [contract, setContract] = useState(null);
-	const [wfStatus,setStatus] = useState(9);
+	//const [wfStatus,setStatus] = useState(9);
 	
 	
 	const handleConnect = useCallback (async function () {
@@ -27,13 +27,13 @@ export default function App() {
 			const contract = new web3.eth.Contract(VotingContract.abi, deployedNetwork && deployedNetwork.address);
 			
 			//Getting Status of the workflow
-			const actualStatus = await contract.methods.wfStatus().call();
+			//const actualStatus = await contract.methods.wfStatus().call();
 			
 			// Set web3, accounts, contract to the state
 			setWeb3(web3);
 			setContract(contract);
 			setAccounts(accounts);
-			setStatus(actualStatus);
+			//setStatus(actualStatus);
 			
 		} catch (error) {
 			// Catch any errors for any of the above operations
@@ -45,7 +45,7 @@ export default function App() {
 	},[]);
 
 	return (<Container fluid>
-			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} wfStatus={wfStatus} setStatus={setStatus}/>
+			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} />
 		</Container>
 	);
 }

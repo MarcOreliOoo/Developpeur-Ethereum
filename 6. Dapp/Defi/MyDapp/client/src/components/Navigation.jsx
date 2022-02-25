@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
 
 
 
-export default function Navigation({handleConnect,web3,accounts,contract,wfStatus,setStatus}){
+export default function Navigation({handleConnect,web3,accounts,contract}){
+	const [wfStatus,setStatus] = useState(99);
+
 	useEffect(function(){
 		(async function(){
 			if(contract){
@@ -13,7 +15,7 @@ export default function Navigation({handleConnect,web3,accounts,contract,wfStatu
 				setStatus(actualStatus);
 			}		
 		})();
-	},[]);
+	},[contract]);
 	
 
 	return <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -24,7 +26,7 @@ export default function Navigation({handleConnect,web3,accounts,contract,wfStatu
 			{web3===null ? <button className="btn btn-primary" onClick={handleConnect}>Connect</button> :
 			<Nav className="me-auto">
 				<Navbar.Text>
-					{wfStatus}
+					Actual status : {wfStatus}
 				</Navbar.Text>
 				<Navbar.Text>
 					Connected with : {accounts[0]}
