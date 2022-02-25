@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import CardComponent from "../utils/CardComponent";
 import ListGroup from "react-bootstrap/ListGroup";
 import Button from 'react-bootstrap/Button';
+import Table from 'react-bootstrap/Table';
 
 export default function VotersList({accounts, contract, isOwner}){
 	const [votersList, setVotersList] = useState([]);
@@ -22,13 +23,18 @@ export default function VotersList({accounts, contract, isOwner}){
 		return 'Chargement...';
 	}
 	return <CardComponent title="Whitelist of Voters">
-		<ListGroup variant="flush">
-			{votersList.map(v =>
-				<ListGroup.Item key={v}>{v}
-				<Button variant="dark" size="sm">Vote</Button>
-				</ListGroup.Item>
-			)}
-		</ListGroup>
+		<Table striped bordered hover size="sm" >
+		<thead>
+			<tr>
+				<th>Voter</th>
+				<th>has Voted ?</th>
+				<th>Voted For ?</th>
+			</tr>
+		</thead>
+		<tbody>
+			{votersList.map(v => <tr key={v}><td>{v}</td></tr>)}
+		</tbody>
+		</Table>
 	</CardComponent>
 	
 }

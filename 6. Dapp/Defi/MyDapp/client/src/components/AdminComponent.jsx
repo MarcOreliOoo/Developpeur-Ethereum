@@ -105,7 +105,7 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 			</CardComponent>
 			}
 		</Col>
-		<Col>
+		<Col md="auto">
 			<VotersList accounts={accounts} contract={contract} isOwner={isOwner} />
 		</Col>
 		</Row>
