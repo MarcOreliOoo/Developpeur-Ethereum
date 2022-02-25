@@ -1,6 +1,17 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import ProposalsList from "./ProposalsList";
 
+export default function VotersComponent({web3, accounts, contract}){
+	const [proposalsList, setProposalsList] = useState([]);
+	//create a proposal
 
-export default function VotersComponent(){
-	return <>Voters page</>
+	//Proposal List
+	
+	//voteForAProposal
+
+	//seeWinner
+
+	return <>
+		<ProposalsList contract={contract}/>
+	</>
 }

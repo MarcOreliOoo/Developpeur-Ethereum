@@ -20,7 +20,7 @@ module.exports = {
 
 	networks: {
 		develop: {
-			port: 8545
+			port: 7545
 		},
 		rinkeby: {
 			provider: function() {

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import Container from 'react-bootstrap/Container';
 import VotingContract from "./contracts/Voting.json";
-import getWeb3 from "./getWeb3";
+import getWeb3 from "./utils/getWeb3";
 import Navigation from "./components/Navigation";
 import AdminComponent from "./components/AdminComponent";
 import VotersComponent from "./components/VotersComponent";
@@ -58,8 +58,8 @@ export default function App() {
 
 	return (<Container fluid>
 			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} />
-			{isOwner && <AdminComponent />}
-			{web3 && <VotersComponent />}
+			{isOwner && <AdminComponent web3={web3} accounts={accounts} contract={contract} isOwner={isOwner}/>}
+			{contract && <VotersComponent web3={web3} accounts={accounts} contract={contract}/>}
 		</Container>
 	);
 }

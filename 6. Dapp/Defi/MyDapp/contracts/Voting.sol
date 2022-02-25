@@ -87,6 +87,10 @@ contract Voting is Ownable{
         return proposals;
     }
 
+	function getTotalVoter() public view returns(uint){
+		return totalVoter;
+	}
+
     /*
     *
     *   1) L'administrateur du vote enregistre une liste blanche d'électeurs identifiés par leur adresse Ethereum.
