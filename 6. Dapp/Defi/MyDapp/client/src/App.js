@@ -3,6 +3,8 @@ import Container from 'react-bootstrap/Container';
 import VotingContract from "./contracts/Voting.json";
 import getWeb3 from "./getWeb3";
 import Navigation from "./components/Navigation";
+import VotersComponent from "./components/VotersComponent";
+
 
 
 export default function App() {
@@ -46,6 +48,8 @@ export default function App() {
 
 	return (<Container fluid>
 			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} />
+			<VotersComponent />
+
 		</Container>
 	);
 }

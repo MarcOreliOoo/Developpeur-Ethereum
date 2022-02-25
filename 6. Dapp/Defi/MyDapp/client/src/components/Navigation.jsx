@@ -22,17 +22,20 @@ export default function Navigation({handleConnect,web3,accounts,contract}){
 		<Container>
 		<Navbar.Brand href="#home">Voting System</Navbar.Brand>
 		<Navbar.Toggle aria-controls="responsive-navbar-nav" />
-		<Navbar.Collapse id="responsive-navbar-nav me-auto">
-			{web3===null ? <button className="btn btn-primary" onClick={handleConnect}>Connect</button> :
-			<Nav className="me-auto">
-				<Navbar.Text>
-					Actual status : {wfStatus}
-				</Navbar.Text>
-				<Navbar.Text>
-					Connected with : {accounts[0]}
-				</Navbar.Text>
-			</Nav>}
-		</Navbar.Collapse>
+		{web3===null ? <button className="btn btn-primary ms-auto" onClick={handleConnect}>Connect</button> :
+			<Navbar.Collapse id="responsive-navbar-nav">
+				<Nav>
+					<Navbar.Text>
+						Actual status : {wfStatus}
+					</Navbar.Text>
+				</Nav>
+				<Nav className="ms-auto">
+					<Navbar.Text>
+						Connected with : {accounts[0]}
+					</Navbar.Text>
+				</Nav>
+			</Navbar.Collapse>
+		}
 		</Container>
 	</Navbar>
 }
