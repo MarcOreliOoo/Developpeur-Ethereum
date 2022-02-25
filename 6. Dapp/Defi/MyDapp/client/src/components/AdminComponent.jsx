@@ -1,26 +1,31 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import VotersList from "./VotersList";
 import FormField from "../utils/FormField";
-import Card from 'react-bootstrap/Card';
+import CardComponent from "../utils/CardComponent";
+import AlertComponent from "../utils/AlertComponent";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 
-export default function AdminComponent({web3, accounts, contract, isOwner}){
+
+export default function AdminComponent({web3, accounts, contract, isOwner, wfStatus}){
 	const formAddress = useRef(null);
+	const [error,setError] = useState(null);
 
 	const handleRegisteringVoters = async () => {
 		const voterToregistred = formAddress.current.address.value;
 		if(voterToregistred.trim() !== '' && web3.utils.isAddress(voterToregistred)){
-			await contract.methods.registeringUniqueAd(voterToregistred).send({from: accounts[0]})
+			await contract.methods.registeringUniqueAd(voterToregistred).send({from: accounts[0], handleRevert:true})
 			.on("receipt",function(receipt){
-				console.log(receipt);
+				voterToregistred = "";
 			})
-			.on("error",function(error, receipt){
-				console.log(error);
-				console.log(receipt);
+			.on("error",function(error){
+				const parsedError = JSON.stringify(error.message);
+				if (parsedError.includes('revert ')) {
+					setError(parsedError);
+				}
 			});
 		}
 	};
@@ -86,25 +91,27 @@ export default function AdminComponent({web3, accounts, contract, isOwner}){
 		});
     }
 */
+
 	return(
+		<div className="container mt-4">
 		<Row>
 		<Col>
-			<Card>
-				<Card.Header as="h5">Autoriser un nouveau compte</Card.Header>
-				<Card.Body>
-					<Form ref={formAddress}>
-						<FormField name="address" label="Address :" placeholder="0x..." />
-					</Form>
-					<Button onClick={handleRegisteringVoters} type="submit" variant="dark"> Go </Button>
-				</Card.Body>
-			</Card>
+			{wfStatus == 0 && isOwner && 
+			<CardComponent title="Whitelist an address" >
+				<Form ref={formAddress}>
+					<FormField name="address" label="Address :" placeholder="0x..." />
+				</Form>
+				<Button onClick={handleRegisteringVoters} type="submit" variant="dark"> Go </Button>
+			</CardComponent>
+			}
 		</Col>
 		<Col>
 			<VotersList accounts={accounts} contract={contract} isOwner={isOwner} />
 		</Col>
 		</Row>
+		<Row>{error && <AlertComponent>{error}</AlertComponent>}</Row>
+		</div>
 	);
 }
-
 
 

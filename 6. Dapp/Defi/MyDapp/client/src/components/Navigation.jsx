@@ -12,13 +12,14 @@ const enumContent = [
 	"VotesTallied"
 ];
 
-export default function Navigation({handleConnect, web3, accounts, contract}){
-	const [wfStatus,setStatus] = useState(0);
+export default function Navigation({handleConnect, web3, accounts, contract, setStatus}){
+	const [wfStatus,setLocalStatus] = useState(0);
 
 	useEffect(function(){
 		(async function(){
 			if(contract){
 				const actualStatus = await contract.methods.wfStatus().call();
+				setLocalStatus(actualStatus);
 				setStatus(actualStatus);
 			}		
 		})();

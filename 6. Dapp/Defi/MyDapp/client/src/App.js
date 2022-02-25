@@ -14,7 +14,7 @@ export default function App() {
     const [accounts, setAccounts] = useState([""]);
     const [contract, setContract] = useState(null);
 	const [isOwner,setOwner] = useState(false);
-	
+	const [wfStatus, setStatus] = useState(0);
 	
 	const handleConnect = useCallback (async function () {
 		console.log("useCallb");
@@ -30,6 +30,7 @@ export default function App() {
 			const deployedNetwork = VotingContract.networks[networkId];
 			//const revertB = web3.eth.Contract.handleRevert.true;
 			const contract = new web3.eth.Contract(VotingContract.abi, deployedNetwork && deployedNetwork.address);
+			
 			
 			//Getting Status of the workflow
 			//const actualStatus = await contract.methods.wfStatus().call();
@@ -57,8 +58,8 @@ export default function App() {
 
 
 	return (<Container fluid>
-			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} />
-			{isOwner && <AdminComponent web3={web3} accounts={accounts} contract={contract} isOwner={isOwner}/>}
+			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} setStatus={setStatus} />
+			{isOwner && <AdminComponent web3={web3} accounts={accounts} contract={contract} isOwner={isOwner} wfStatus={wfStatus} />}
 			{contract && <VotersComponent web3={web3} accounts={accounts} contract={contract}/>}
 		</Container>
 	);

@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import CardComponent from "../utils/CardComponent";
+import ListGroup from "react-bootstrap/ListGroup";
+import Button from 'react-bootstrap/Button';
 
 export default function VotersList({accounts, contract, isOwner}){
 	const [votersList, setVotersList] = useState([]);
@@ -11,15 +14,21 @@ export default function VotersList({accounts, contract, isOwner}){
 				const response = await contract.methods.getWhitelist().call({from: accounts[0]});
 				setVotersList(response);
 				setLoading(false); //On a fini le chargement
-				console.log(response)
 			}
 		})();
-	},[]);
+	},[votersList]);
 
 	if (loading){
 		return 'Chargement...';
 	}
-	return <ul>
-		{votersList.map(v => <li key={v}>{v}</li>)}
-	</ul>
+	return <CardComponent title="Whitelist of Voters">
+		<ListGroup variant="flush">
+			{votersList.map(v =>
+				<ListGroup.Item key={v}>{v}
+				<Button variant="dark" size="sm">Vote</Button>
+				</ListGroup.Item>
+			)}
+		</ListGroup>
+	</CardComponent>
+	
 }
