@@ -3,10 +3,17 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
 
+const enumContent = [
+	"RegisteringVoters",
+	"ProposalsRegistrationStarted",
+	"ProposalsRegistrationEnded",
+	"VotingSessionStarted",
+	"VotingSessionEnded",
+	"VotesTallied"
+];
 
-
-export default function Navigation({handleConnect,web3,accounts,contract}){
-	const [wfStatus,setStatus] = useState(99);
+export default function Navigation({handleConnect, web3, accounts, contract}){
+	const [wfStatus,setStatus] = useState(0);
 
 	useEffect(function(){
 		(async function(){
@@ -16,7 +23,9 @@ export default function Navigation({handleConnect,web3,accounts,contract}){
 			}		
 		})();
 	},[contract]);
-	
+
+	//TODO : handle accountsChanged + chainChanged 
+
 
 	return <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
 		<Container>
@@ -26,12 +35,12 @@ export default function Navigation({handleConnect,web3,accounts,contract}){
 			<Navbar.Collapse id="responsive-navbar-nav">
 				<Nav>
 					<Navbar.Text>
-						Actual status : {wfStatus}
+						Actual status : {enumContent[wfStatus]}
 					</Navbar.Text>
 				</Nav>
-				<Nav className="ms-auto">
-					<Navbar.Text>
-						Connected with : {accounts[0]}
+				<Nav className="ms-auto" >
+					<Navbar.Text >
+						Connected with : {accounts[0].substr(0,5)+" ... "+accounts[0].substr(accounts[0].length - 4)}
 					</Navbar.Text>
 				</Nav>
 			</Navbar.Collapse>

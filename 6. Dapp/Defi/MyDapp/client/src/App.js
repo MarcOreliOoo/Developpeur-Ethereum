@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import VotingContract from "./contracts/Voting.json";
 import getWeb3 from "./getWeb3";
 import Navigation from "./components/Navigation";
+import AdminComponent from "./components/AdminComponent";
 import VotersComponent from "./components/VotersComponent";
 
 
@@ -10,9 +11,9 @@ import VotersComponent from "./components/VotersComponent";
 export default function App() {
 	
     const [web3, setWeb3] = useState(null);
-    const [accounts, setAccounts] = useState([]);
+    const [accounts, setAccounts] = useState([""]);
     const [contract, setContract] = useState(null);
-	//const [wfStatus,setStatus] = useState(9);
+	const [isOwner,setOwner] = useState(false);
 	
 	
 	const handleConnect = useCallback (async function () {
@@ -22,6 +23,8 @@ export default function App() {
 			const web3 = await getWeb3();
 			// Use web3 to get the user's accounts.
 			const accounts = await web3.eth.getAccounts();
+			//const accounts = await window.ethereum.request({method: 'eth_accounts'});
+
 			// Get the contract instance.
 			const networkId = await web3.eth.net.getId();
 			const deployedNetwork = VotingContract.networks[networkId];
@@ -30,12 +33,17 @@ export default function App() {
 			
 			//Getting Status of the workflow
 			//const actualStatus = await contract.methods.wfStatus().call();
+
+			// Define if owner is connected
+			const actualOwner = await contract.methods.owner().call();
 			
 			// Set web3, accounts, contract to the state
 			setWeb3(web3);
 			setContract(contract);
 			setAccounts(accounts);
-			//setStatus(actualStatus);
+			if(actualOwner === accounts[0]){
+				setOwner(true);
+			}
 			
 		} catch (error) {
 			// Catch any errors for any of the above operations
@@ -46,10 +54,12 @@ export default function App() {
 		}
 	},[]);
 
+
+
 	return (<Container fluid>
 			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} />
-			<VotersComponent />
-
+			{isOwner && <AdminComponent />}
+			{web3 && <VotersComponent />}
 		</Container>
 	);
 }

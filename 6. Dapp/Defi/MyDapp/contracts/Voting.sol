@@ -47,7 +47,7 @@ contract Voting is Ownable{
 
     WorkflowStatus public wfStatus = WorkflowStatus.RegisteringVoters;
     mapping (address => Voter) private comptesWL;
-    address[] private addressUsed;
+    address[] public addressUsed;
     Proposal[] public proposals;
    
     uint public winningProposalId;
@@ -77,6 +77,14 @@ contract Voting is Ownable{
         WorkflowStatus newStatus = (wfStatus != WorkflowStatus.VotesTallied) ? WorkflowStatus(uint(wfStatus) + 1) : WorkflowStatus.RegisteringVoters;
         emit WorkflowStatusChange(wfStatus,newStatus);
         wfStatus = newStatus;
+    }
+
+    function getWhitelist() public view onlyOwner returns(address[] memory) {
+		return addressUsed;
+	}
+
+    function getProposalsList() public view returns(Proposal[] memory){
+        return proposals;
     }
 
     /*
