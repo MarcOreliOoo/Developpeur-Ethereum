@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import VotersList from "./VotersList";
+import EventComponent from "./EventComponent";
 import FormField from "../utils/FormField";
 import CardComponent from "../utils/CardComponent";
 import AlertComponent from "../utils/AlertComponent";
@@ -7,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+
 
 
 
@@ -95,23 +97,26 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 	return(
 		<div className="container mt-4">
 		<Row>
-		<Col>
-			{wfStatus == 0 && isOwner && 
-			<CardComponent title="Whitelist an address" >
-				<Form ref={formAddress}>
-					<FormField name="address" label="Address :" placeholder="0x..." />
-				</Form>
-				<Button onClick={handleRegisteringVoters} type="submit" variant="dark"> Go </Button>
-			</CardComponent>
-			}
-		</Col>
-		<Col md="auto">
-			<VotersList accounts={accounts} contract={contract} isOwner={isOwner} />
-		</Col>
+			{error && <AlertComponent>{error}</AlertComponent>}
 		</Row>
-		<Row>{error && <AlertComponent>{error}</AlertComponent>}</Row>
+		<Row>
+			<Col>
+				{wfStatus == 0 && isOwner && 
+				<CardComponent title="Whitelist an address" >
+					<Form ref={formAddress}>
+						<FormField name="address" label="Address :" placeholder="0x..." />
+					</Form>
+					<Button onClick={handleRegisteringVoters} type="submit" variant="dark"> Go </Button>
+				</CardComponent>
+				}
+			</Col>
+			<Col md="auto">
+				<VotersList accounts={accounts} contract={contract} isOwner={isOwner} />
+			</Col>
+		</Row>
+		<Row>
+			<EventComponent contract={contract} />
+		</Row>
 		</div>
 	);
 }
-
-

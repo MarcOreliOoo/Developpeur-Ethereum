@@ -60,7 +60,7 @@ export default function App() {
 	return (<Container fluid>
 			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} setStatus={setStatus} />
 			{isOwner && <AdminComponent web3={web3} accounts={accounts} contract={contract} isOwner={isOwner} wfStatus={wfStatus} />}
-			{contract && <VotersComponent web3={web3} accounts={accounts} contract={contract}/>}
+			{contract && <VotersComponent web3={web3} accounts={accounts} contract={contract} wfStatus={wfStatus}/>}
 		</Container>
 	);
 }
