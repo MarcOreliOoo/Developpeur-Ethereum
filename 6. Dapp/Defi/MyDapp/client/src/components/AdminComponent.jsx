@@ -16,12 +16,12 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 	const formAddress = useRef(null);
 	const [error,setError] = useState(null);
 
-	const handleRegisteringVoters = async () => {
+	const registeringVoters = async () => {
 		const voterToregistred = formAddress.current.address.value;
 		if(voterToregistred.trim() !== '' && web3.utils.isAddress(voterToregistred)){
 			await contract.methods.registeringUniqueAd(voterToregistred).send({from: accounts[0], handleRevert:true})
 			.on("receipt",function(receipt){
-				voterToregistred = "";
+				formAddress.current.address.value = "";
 			})
 			.on("error",function(error){
 				const parsedError = JSON.stringify(error.message);
@@ -32,20 +32,18 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 		}
 	};
     
-/*
+
 	const startingProposalSession = async () => {
-		const { accounts, contract } = this.state;
 		await contract.methods.startingProposalSession().send({from: accounts[0]})
 		.on("receipt",function(receipt){
 			console.log(receipt);
 		})
-		.on("error",function(error, receipt){
-			console.log(error);
-			console.log(receipt);
+		.on("error",function(error){
+			setError(error);
 		});
     };
 
-	const endingProposalSession = async () => {
+/*	const endingProposalSession = async () => {
 		const { accounts, contract } = this.state;
 		await contract.methods.endingProposalSession().send({from: accounts[0]})
 		.on("receipt",function(receipt){
@@ -106,7 +104,14 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 					<Form ref={formAddress}>
 						<FormField name="address" label="Address :" placeholder="0x..." />
 					</Form>
-					<Button onClick={handleRegisteringVoters} type="submit" variant="dark"> Go </Button>
+					<Button onClick={registeringVoters} type="submit" variant="dark" size="sm"> Go </Button>
+				</CardComponent>
+				}
+			</Col>
+			<Col>
+				{wfStatus == 0 && isOwner && 
+				<CardComponent title="Start proposal session" >
+					<Button onClick={startingProposalSession} type="submit" variant="dark" size="sm"> Go </Button>
 				</CardComponent>
 				}
 			</Col>

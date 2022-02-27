@@ -16,13 +16,18 @@ export default function Navigation({handleConnect, web3, accounts, contract, set
 	const [wfStatus,setLocalStatus] = useState(0);
 
 	useEffect(function(){
-		(async function(){
-			if(contract){
-				const actualStatus = await contract.methods.wfStatus().call();
-				setLocalStatus(actualStatus);
-				setStatus(actualStatus);
-			}		
-		})();
+		const timer = window.setInterval(function(){
+			(async function(){
+				if(contract){
+					const actualStatus = await contract.methods.wfStatus().call();
+					setLocalStatus(actualStatus);
+					setStatus(actualStatus);
+				}		
+			})();
+		},1000);
+		return function(){
+			clearInterval(timer);
+		};
 	},[contract]);
 
 	//TODO : handle accountsChanged + chainChanged 

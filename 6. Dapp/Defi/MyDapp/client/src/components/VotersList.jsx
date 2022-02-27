@@ -22,13 +22,16 @@ export default function VotersList({accounts, contract, isOwner}){
 	if (loading){
 		return 'Chargement...';
 	}
+	if(votersList.length==0){
+		return <></>
+	}
 	return <CardComponent title="Whitelist of Voters">
 		<Table striped bordered hover size="sm" >
 		<thead>
 			<tr>
-				<th>Voter</th>
-				<th>has Voted ?</th>
-				<th>Voted For ?</th>
+				<th>Voters</th>
+{/* 				<th>has Voted ?</th>
+				<th>Voted For ?</th> */}
 			</tr>
 		</thead>
 		<tbody>
