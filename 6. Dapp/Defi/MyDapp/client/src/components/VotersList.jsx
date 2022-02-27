@@ -30,7 +30,7 @@ export default function VotersList({accounts, contract, isOwner}){
 		<thead>
 			<tr>
 				<th>Voters</th>
-{/* 				<th>has Voted ?</th>
+				{/*<th>has Voted ?</th>
 				<th>Voted For ?</th> */}
 			</tr>
 		</thead>

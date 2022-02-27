@@ -5,6 +5,10 @@ import getWeb3 from "./utils/getWeb3";
 import Navigation from "./components/Navigation";
 import AdminComponent from "./components/AdminComponent";
 import VotersComponent from "./components/VotersComponent";
+import EventComponent from "./components/EventComponent";
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
 
 
 
@@ -31,10 +35,6 @@ export default function App() {
 			//const revertB = web3.eth.Contract.handleRevert.true;
 			const contract = new web3.eth.Contract(VotingContract.abi, deployedNetwork && deployedNetwork.address);
 			
-			
-			//Getting Status of the workflow
-			//const actualStatus = await contract.methods.wfStatus().call();
-
 			// Define if owner is connected
 			const actualOwner = await contract.methods.owner().call();
 			
@@ -57,10 +57,14 @@ export default function App() {
 
 
 
-	return (<Container fluid>
+	return (
+		<Container fluid>
 			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} setStatus={setStatus} />
-			{isOwner && <AdminComponent web3={web3} accounts={accounts} contract={contract} isOwner={isOwner} wfStatus={wfStatus} />}
-			{contract && <VotersComponent web3={web3} accounts={accounts} contract={contract} wfStatus={wfStatus}/>}
+			<Container>
+				<Row><Col>{isOwner && <AdminComponent web3={web3} accounts={accounts} contract={contract} isOwner={isOwner} wfStatus={wfStatus} />}</Col></Row>
+				<Row><Col>{contract && <VotersComponent web3={web3} accounts={accounts} contract={contract} wfStatus={wfStatus}/>}</Col></Row>
+				<Row><Col><EventComponent contract={contract} /></Col></Row>
+			</Container>
 		</Container>
 	);
 }

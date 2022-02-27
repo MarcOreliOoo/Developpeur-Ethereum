@@ -5,11 +5,6 @@ import Toast from 'react-bootstrap/Toast';
 
 export default function EventComponent({contract}){
 
-	const define = {
-		eventEmittedName:"",
-		eventEmittedContent:""
-	};
-
 	const [eventEmitted,setEventEmitted] = useState();
 	const [dateTime,setDateTime] = useState(Date.now());
 	const [show,setShow] =  useState(false); //Toast isnt printing by default
@@ -35,12 +30,19 @@ export default function EventComponent({contract}){
 							setDateTime(Date.now());
 							setShow(true);
 						} else if (event.event == "ProposalRegistered"){
-							setEventEmitted(event.returnValues.proposalId);
+							setEventEmitted({
+								eventEmittedName:event.event,
+								eventEmittedContent:"Proposal "+event.returnValues.proposalId + " registred !"
+							});
 							setDateTime(Date.now());
-							//proposalsId.add(anEvent.returnValues.proposalId);
+							setShow(true);
 						} else if (event.event == "Voted"){
-							setEventEmitted({key:event.returnValues.voter,val:event.returnValues.proposalId});
+							setEventEmitted({
+								eventEmittedName:event.event,
+								eventEmittedContent:"Voter "+event.returnValues.voter + " voted for "+event.returnValues.proposalId
+							});
 							setDateTime(Date.now());
+							setShow(true);
 						}
 					}
 				);
