@@ -5,7 +5,7 @@ import getWeb3 from "./utils/getWeb3";
 import Navigation from "./components/Navigation";
 import AdminComponent from "./components/AdminComponent";
 import VotersComponent from "./components/VotersComponent";
-import EventComponent from "./components/EventComponent";
+
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
@@ -63,7 +63,6 @@ export default function App() {
 			<Container>
 				<Row><Col>{isOwner && <AdminComponent web3={web3} accounts={accounts} contract={contract} isOwner={isOwner} wfStatus={wfStatus} />}</Col></Row>
 				<Row><Col>{contract && <VotersComponent web3={web3} accounts={accounts} contract={contract} wfStatus={wfStatus}/>}</Col></Row>
-				<Row><Col><EventComponent contract={contract} /></Col></Row>
 			</Container>
 		</Container>
 	);

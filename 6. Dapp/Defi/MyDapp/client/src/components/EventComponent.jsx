@@ -9,6 +9,8 @@ export default function EventComponent({contract}){
 	const [dateTime,setDateTime] = useState(Date.now());
 	const [show,setShow] =  useState(false); //Toast isnt printing by default
 
+//	const [listVoters, setlistVoters] = 
+
 	useEffect(function(){
 		if(contract){
 			const timer = window.setInterval(function(){

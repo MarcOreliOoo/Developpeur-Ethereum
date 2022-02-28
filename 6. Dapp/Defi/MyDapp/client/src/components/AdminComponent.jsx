@@ -3,6 +3,7 @@ import VotersList from "./VotersList";
 import FormField from "../utils/FormField";
 import CardComponent from "../utils/CardComponent";
 import AlertComponent from "../utils/AlertComponent";
+import EventComponent from "./EventComponent";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
@@ -14,6 +15,7 @@ import Col from 'react-bootstrap/Col';
 export default function AdminComponent({web3, accounts, contract, isOwner, wfStatus}){
 	const formAddress = useRef(null);
 	const [error,setError] = useState(null);
+	const [nbVote,setNbVote] = useState(0);
 
 	const registeringVoters = async () => {
 		const voterToregistred = formAddress.current.address.value;
@@ -62,13 +64,17 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
     };
 
 	const endVotingSession = async () => {
-		await contract.methods.endVotingSession().send({from: accounts[0]})
-		.on("receipt",function(receipt){
-			console.log(receipt);
-		})
-		.on("error",function(error){
-			setError(error);
-		});
+		const nb = await contract.methods.nbVote().call();
+		setNbVote(nb);
+		if(nb>0){
+			await contract.methods.endVotingSession().send({from: accounts[0]})
+			.on("receipt",function(receipt){
+				console.log(receipt);
+			})
+			.on("error",function(error){
+				setError(error);
+			});
+		} else {setError("Not enough vote");}
     };
 
 	const countVote = async () => {
@@ -118,7 +124,7 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 					</CardComponent>
 				</Col>
 			}
-			{wfStatus == 3 && isOwner &&
+			{wfStatus == 3 && isOwner && nbVote>0 &&
 				<Col>
 					<CardComponent title="End voting session" >
 						<div className="d-grid gap-2"><Button onClick={endVotingSession} type="submit" variant="secondary" size="sm"> Go </Button></div>
@@ -136,6 +142,7 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 				<VotersList accounts={accounts} contract={contract} isOwner={isOwner} />
 			</Col>
 		</Row>
+		<Row><EventComponent contract={contract} /></Row>
 		</div>
 	);
 }

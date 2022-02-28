@@ -83,6 +83,10 @@ contract Voting is Ownable{
 		return addressUsed;
 	}
 
+    function getWhitelistedVoter(address _address) public view onlyOwner returns(Voter memory){
+        return comptesWL[_address];
+    }
+
     function getProposalsList() public view returns(Proposal[] memory){
         return proposals;
     }
