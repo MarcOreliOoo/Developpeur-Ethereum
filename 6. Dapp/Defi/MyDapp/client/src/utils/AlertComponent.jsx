@@ -1,14 +1,23 @@
 import React, { useState } from "react";
-import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
+
 export default function AlertComponent({ children }) {
 	const [show, setShow] = useState(true);
 
-	if(typeof(children) === 'object'){
-		console.log(children)
-		return <></>;
-	}
 	if (show) {
+		if(typeof(children) === 'object'){
+			const child = Object.entries(children);
+			/* Object.entries(children).forEach(
+				([key,val]) => console.log(`${key}: ${val}`)
+			); */
+			
+			return (
+				<Alert variant="danger" onClose={() => setShow(false)} dismissible>
+					{child[0] && <Alert.Heading>{child[0]}</Alert.Heading>}
+						{child[1] && <p>{child[1]}</p>}
+				</Alert>	
+			);
+		}
 		return (
 			<Alert variant="danger" onClose={() => setShow(false)} dismissible>
 		  		<Alert.Heading>Oh snap! You got an error!</Alert.Heading>
@@ -16,5 +25,5 @@ export default function AlertComponent({ children }) {
 			</Alert>
 	  	);
 	}
-	return <Button onClick={() => setShow(true)}>Show Alert</Button>;
+	return <></>;
 }
