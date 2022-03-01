@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Container from 'react-bootstrap/Container';
 import VotingContract from "./contracts/Voting.json";
 import getWeb3 from "./utils/getWeb3";
@@ -55,7 +55,20 @@ export default function App() {
 		}
 	},[]);
 
+	
+	useEffect(function(){
+		window.ethereum.on('accountsChanged', function (accounts) {
+			window.location.reload();
+		  });
+	},[]);
 
+	useEffect(function(){
+		window.ethereum.on('chainChanged', (chainId) => {
+			window.location.reload();
+		});
+	},[]);
+
+	
 
 	return (
 		<Container fluid>
