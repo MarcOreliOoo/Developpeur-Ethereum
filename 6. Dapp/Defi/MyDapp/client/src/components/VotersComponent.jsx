@@ -21,7 +21,6 @@ export default function VotersComponent({web3, accounts, contract, wfStatus}){
 			(async function(){
 				const voter = await contract.methods.getWhitelistedVoter(accounts[0]).call();
 				if(voter){
-					console.log(voter);
 					setHasVoted(voter.hasVoted);
 					setIsRegistered(voter.isRegistered);
 				}
@@ -49,7 +48,6 @@ export default function VotersComponent({web3, accounts, contract, wfStatus}){
 		}
 	};
 
-	//seeWinner
 
 	return <>
 		<div className="container mt-4">

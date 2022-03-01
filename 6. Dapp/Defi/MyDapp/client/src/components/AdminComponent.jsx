@@ -87,6 +87,16 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 		});
     };
 
+	const reInitStatus = async () => {
+		await contract.methods.reInitStatus().send({from: accounts[0]})
+		.on("receipt",function(receipt){
+			console.log(receipt);
+		})
+		.on("error",function(error){
+			setError(error);
+		});
+    };
+
 	return(
 		<div className="container mt-4">
 		<Row>
@@ -124,7 +134,7 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 					</CardComponent>
 				</Col>
 			}
-			{wfStatus == 3 && isOwner && nbVote>0 &&
+			{wfStatus == 3 && isOwner && 
 				<Col>
 					<CardComponent title="End voting session" >
 						<div className="d-grid gap-2"><Button onClick={endVotingSession} type="submit" variant="secondary" size="sm"> Go </Button></div>
@@ -135,6 +145,13 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 				<Col>
 					<CardComponent title="Count vote" >
 						<div className="d-grid gap-2"><Button onClick={countVote} type="submit" variant="secondary" size="sm"> Go </Button></div>
+					</CardComponent>
+				</Col>
+			}
+			{wfStatus == 5 && isOwner && 
+				<Col>
+					<CardComponent title="Re Init App" >
+						<div className="d-grid gap-2"><Button onClick={reInitStatus} type="submit" variant="secondary" size="sm"> Go </Button></div>
 					</CardComponent>
 				</Col>
 			}
