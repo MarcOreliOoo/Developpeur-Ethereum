@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import CardComponent from "../utils/CardComponent";
-import ListGroup from "react-bootstrap/ListGroup";
-import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 
-export default function VotersList({accounts, contract, isOwner}){
+export default function VotersList({accounts, contract, isOwner,wfStatus }){
 	const [votersList, setVotersList] = useState([]);
 	const [loading, setLoading] = useState(true); //Par défaut est en train de charger
-	
+
 
 	useEffect(function(){
 		(async function(){
@@ -17,7 +15,9 @@ export default function VotersList({accounts, contract, isOwner}){
 				setLoading(false); //On a fini le chargement
 			}
 		})();
-	},[votersList]);
+	},[votersList,wfStatus]);
+
+
 
 	if (loading){
 		return 'Chargement...';
@@ -30,8 +30,6 @@ export default function VotersList({accounts, contract, isOwner}){
 		<thead>
 			<tr>
 				<th>Voters</th>
-				{/*<th>has Voted ?</th>
-				<th>Voted For ?</th> */}
 			</tr>
 		</thead>
 		<tbody>

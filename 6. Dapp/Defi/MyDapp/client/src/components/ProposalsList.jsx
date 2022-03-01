@@ -47,16 +47,18 @@ export default function ProposalsList({accounts, contract, wfStatus, isRegistred
 	 * Get the winning proposal on a useEffect to get it when wfStatus change
 	 */
 	useEffect(function(){
-		(async function(){
-			const response = await contract.methods.getWinner().call();
-			setWinner(response);
-			
-			if(winner && proposalsList.length>0){
-				console.log("ici")
-				let listP = sortArrayByKey(proposalsList,proposalsList.voteCount)
-				setProposalsList(listP);
-			}
-		})();
+		if(wfStatus == 5){
+			(async function(){
+				const response = await contract.methods.getWinner().call();
+				setWinner(response);
+				
+				if(winner && proposalsList.length>0){
+					console.log("ici")
+					let listP = sortArrayByKey(proposalsList,proposalsList.voteCount)
+					setProposalsList(listP);
+				}
+			})();
+		}
 	},[wfStatus]);
 
 	/**
@@ -78,7 +80,7 @@ export default function ProposalsList({accounts, contract, wfStatus, isRegistred
 
 
 	if (loading || proposalsList.length==0){
-		return 'Chargement...';
+		return <></>;
 	}
 	return <>
 		<CardComponent title="List of proposals">
@@ -116,7 +118,7 @@ export default function ProposalsList({accounts, contract, wfStatus, isRegistred
 function Proposal({id, proposal, wfStatus, onVote, disable, winner}){
 	const handleVoting = async function(e){
 		e.preventDefault();
-		await onVote(id);
+		await onVote(id-1);
 	}
 
 	/**

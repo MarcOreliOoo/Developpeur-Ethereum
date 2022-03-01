@@ -257,6 +257,8 @@ contract Voting is Ownable{
         winningProposalId = 0;
         //uint totalVoter
         totalVoter = 0;
+		//array of addressUsed
+		delete addressUsed;
     }
 
 }

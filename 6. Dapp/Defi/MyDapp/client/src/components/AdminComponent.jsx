@@ -16,7 +16,8 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 	const formAddress = useRef(null);
 	const [error,setError] = useState(null);
 	const [nbVote,setNbVote] = useState(0);
-
+	const [forceReload,setForceReload] = useState(false)
+;
 	const registeringVoters = async () => {
 		const voterToregistred = formAddress.current.address.value;
 		if(voterToregistred.trim() !== '' && web3.utils.isAddress(voterToregistred)){
@@ -95,8 +96,10 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 		.on("error",function(error){
 			setError(error);
 		});
+		setForceReload(true);
     };
 
+	//TODO : Error à nettoyer après une error
 	return(
 		<div className="container mt-4">
 		<Row>
@@ -156,7 +159,7 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 				</Col>
 			}
 			<Col md="auto">
-				<VotersList accounts={accounts} contract={contract} isOwner={isOwner} />
+				<VotersList accounts={accounts} contract={contract} isOwner={isOwner} wfStatus={wfStatus}/>
 			</Col>
 		</Row>
 		<Row><EventComponent contract={contract} /></Row>
