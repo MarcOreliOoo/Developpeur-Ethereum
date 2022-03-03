@@ -16,8 +16,14 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 	const formAddress = useRef(null);
 	const [error,setError] = useState(null);
 	const [nbVote,setNbVote] = useState(0);
-	const [forceReload,setForceReload] = useState(false)
-;
+	const [forceReload,setForceReload] = useState(false);
+
+	/**
+	 * Registering voters
+	 * First step : get the state of react of the formAddress with a useRef
+	 * Second step : if the input value is a valid address, then send the transaction
+	 * Third step : promise, if receipt update the input value of formAddress, if not, submit an error to the console and the AlertComponent error.
+	 */
 	const registeringVoters = async () => {
 		const voterToregistred = formAddress.current.address.value;
 		if(voterToregistred.trim() !== '' && web3.utils.isAddress(voterToregistred)){
@@ -34,6 +40,11 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 		}
 	};
     
+	/**
+	 * Starting the proposal session
+	 * First step : call the proposal session
+	 * Second step : promise, if receipt log receipt, if not, submit an error to the AlertComponent error.
+	 */
 	const startingProposalSession = async () => {
 		await contract.methods.startingProposalSession().send({from: accounts[0]})
 		.on("receipt",function(receipt){
@@ -44,6 +55,11 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 		});
     };
 
+	/**
+	 * Ending the proposal session
+	 * First step : call the method
+	 * Second step : promise, if receipt log receipt, if not, submit an error to the AlertComponent error.
+	 */
 	const endingProposalSession = async () => {
 		await contract.methods.endingProposalSession().send({from: accounts[0]})
 		.on("receipt",function(receipt){
@@ -54,6 +70,11 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 		});
     };
 
+	/**
+	 * Starting the voting session
+	 * First step : call the method
+	 * Second step : promise, if receipt log receipt, if not, submit an error to the AlertComponent error.
+	 */
 	const startVotingSession = async () => {
 		await contract.methods.startVotingSession().send({from: accounts[0]})
 		.on("receipt",function(receipt){
@@ -64,6 +85,11 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 		});
     };
 
+	/**
+	 * Ending the vote session
+	 * First step : if the number of vote is >0 then call the method
+	 * Second step : promise, if receipt log receipt, if not, submit an error to the AlertComponent error.
+	 */
 	const endVotingSession = async () => {
 		const nb = await contract.methods.nbVote().call();
 		setNbVote(nb);
@@ -78,6 +104,11 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 		} else {setError("Not enough vote");}
     };
 
+	/**
+	 * Count the vote session
+	 * First step : call the method
+	 * Second step : promise, if receipt log receipt, if not, submit an error to the AlertComponent error.
+	 */
 	const countVote = async () => {
 		await contract.methods.countVote().send({from: accounts[0]})
 		.on("receipt",function(receipt){
@@ -88,6 +119,11 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 		});
     };
 
+	/**
+	 * Re start the app from scratch for a new proposal session
+	 * First step : call the method
+	 * Second step : promise, if receipt log receipt, if not, submit an error to the AlertComponent error.
+	 */
 	const reInitStatus = async () => {
 		await contract.methods.reInitStatus().send({from: accounts[0]})
 		.on("receipt",function(receipt){
@@ -99,7 +135,7 @@ export default function AdminComponent({web3, accounts, contract, isOwner, wfSta
 		setForceReload(true);
     };
 
-	//TODO : Error à nettoyer après une error
+	
 	return(
 		<div className="container mt-4">
 		<Row>

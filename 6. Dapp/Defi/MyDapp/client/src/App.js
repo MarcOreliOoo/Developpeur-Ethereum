@@ -11,15 +11,21 @@ import Col from 'react-bootstrap/Col';
 
 
 
-
+/**
+ * Entry point of the dapp
+ */
 export default function App() {
-	
+	/**
+	 * Some state : web3, accounts, contracts for interaction with the solidity contract
+	 * Some state : isOwner and wfStatus : global state used almost everywhere so we need to the parent component of all to spread its value for all
+	 */
     const [web3, setWeb3] = useState(null);
     const [accounts, setAccounts] = useState([""]);
     const [contract, setContract] = useState(null);
 	const [isOwner,setOwner] = useState(false);
 	const [wfStatus, setStatus] = useState(0);
 	
+	//Handler of connection
 	const handleConnect = useCallback (async function () {
 		console.log("useCallb");
 		try {
@@ -55,13 +61,14 @@ export default function App() {
 		}
 	},[]);
 
-	
+	//If there is a metamask change for accounts, reload the webpage
 	useEffect(function(){
 		window.ethereum.on('accountsChanged', function (accounts) {
 			window.location.reload();
 		  });
 	},[]);
 
+	//If there is a metamask chain change, reload the webpage
 	useEffect(function(){
 		window.ethereum.on('chainChanged', (chainId) => {
 			window.location.reload();
@@ -69,7 +76,12 @@ export default function App() {
 	},[]);
 
 	
-
+/**
+ * - Container fluid for the global look
+ * - Navigation is our main navigation component for connect and print some global info for the user
+ * - If owner of the contract is connected, AdminComponent is visible
+ * - Owner or voter see the VotersComponent anyway
+ */
 	return (
 		<Container fluid>
 			<Navigation handleConnect={handleConnect} web3={web3} accounts={accounts} contract={contract} setStatus={setStatus} />
