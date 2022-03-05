@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.1",
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "chai-arrays": "^2.2.0",
+    "chai-asserttype": "^1.0.5"
+  }
+}

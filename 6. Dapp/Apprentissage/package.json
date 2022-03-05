@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.2",
+    "@truffle/hdwallet-provider": "^2.0.3",
+    "dotenv": "^16.0.0",
+    "install": "^0.13.0",
+    "uninstall": "^0.0.0"
+  }
+}
