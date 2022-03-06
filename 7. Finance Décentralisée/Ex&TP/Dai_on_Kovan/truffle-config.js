@@ -1,6 +1,6 @@
 const path = require("path");
-//const HDWalletProvider = require('@truffle/hdwallet-provider');
-//require('dotenv').config();
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+require('dotenv').config();
 
 
 module.exports = {
@@ -22,7 +22,7 @@ module.exports = {
 		develop: {
 			port: 7545
 		},
-		/* rinkeby: {
+		rinkeby: {
 			provider: function() {
 				return new HDWalletProvider(`${process.env.DB_MNEMONIC}`, `https://rinkeby.infura.io/v3/${process.env.DB_INFURANODE}`)
 			},
@@ -34,7 +34,13 @@ module.exports = {
 			},
 			network_id: 3,
 			gas: 5500000        // Ropsten has a lower block limit than mainnet
-		} */
+		},
+		kovan:{
+			provider: function() {
+				return new HDWalletProvider(`${process.env.DB_MNEMONIC}`, `https://kovan.infura.io/v3/${process.env.DB_INFURANODE}`)
+			},
+			network_id: 42,
+		}
 	},
 
 	compilers: {

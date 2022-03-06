@@ -1,5 +1,5 @@
 {
-  "name": "defintro",
+  "name": "dai_on_kovan",
   "version": "1.0.0",
   "description": "",
   "main": "truffle-config.js",
@@ -13,6 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "^4.5.0"
+    "@openzeppelin/contracts": "^4.5.0",
+    "@truffle/hdwallet-provider": "^2.0.3",
+    "dotenv": "^16.0.0"
   }
 }
